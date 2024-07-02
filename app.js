@@ -2,8 +2,8 @@ import express from "express";
 import logger from "morgan";
 import cors from "cors";
 
-import { authRouter } from "./routes/api/authRouter.js";
-import { userRouter } from "./routes/api/userRouter.js";
+import { router as authRouter } from "./routes/api/authRouter.js";
+import { router as userRouter } from "./routes/api/userRouter.js";
 
 const app = express();
 
