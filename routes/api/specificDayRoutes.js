@@ -10,8 +10,8 @@ import {
   getDayInfo,
   addDayInfo,
   deleteDayInfo,
-} from "../controllers/specificDayController.js";
-import authMiddleware from "../middlewares/authMiddleware.js"; // Middleware for authentication
+} from "../../controllers/specificDayController.js";
+import authMiddleware from "../../middlewares/authMiddleware.js"; // Middleware for authentication
 
 const router = express.Router();
 
