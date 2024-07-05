@@ -2,12 +2,12 @@
 
 ## Team Members
 
-### Bill Mico Malazarte - Team Leader - Product Management
+#### Bill Mico Malazarte - Team Leader - Product Management
 - Create an endpoint to search for products in the database using a query string
 - Create an endpoint to add a consumed product to a specific day
 - Create an endpoint to delete a consumed product from a specific day
 
-### Alexander Dinoy Jr. - Scrum-master
+#### Alexander Dinoy Jr. - Scrum-master
 
 ### Back-End Group
 
