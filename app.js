@@ -7,13 +7,16 @@ dotenv.config();
 import specificDayRouter from "./routes/api/specificDayRoutes.js";
 import calorieRoutes from './routes/api/calorieRoutes.js'; // Calorie routes
 import productRoutes from './routes/api/productRoutes.js'; // Product routes
-import swaggerUi from "swagger-ui-express";
-import swaggerSpec from "./swaggerConfig.js";
 
-import { authRouter } from "./routes/api/authRouter.js";
-import { userRouter } from "./routes/api/userRouter.js";
+import open from "open";
+import swaggerDocument from "./swagger.json" assert { type: "json" };
+import swaggerUi from "swagger-ui-express";
+
+// import { authRouter } from "./routes/api/authRouter.js";
+// import { userRouter } from "./routes/api/userRouter.js";
 
 const app = express();
+const PORT = process.env.PORT || 3000;
 
 const formatsLogger = app.get("env") === "development" ? "dev" : "short";
 
@@ -21,20 +24,35 @@ app.use(logger(formatsLogger));
 app.use(cors());
 app.use(express.json());
 
-app.use("/api/auth", authRouter);
-app.use("/api/users", userRouter);
-app.use("/api", specificDayRouter);
+// app.use("/api/auth", authRouter);
+// app.use("/api/users", userRouter);
 app.use("/api", calorieRoutes); // Use calorie routes
 app.use("/api", productRoutes); // Use product routes
 
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use("/api", specificDayRouter);
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use((_, res) => {
   res.status(404).json({ message: "Not found" });
 });
 
-app.use((err, _, res, __) => {
-  res.status(500).json({ message: err.message });
+app.use((err, _req, res, _next) => {
+  const { status = 500, message = "Server error" } = err;
+  res.status(status).json({ message });
+});
+
+app.listen(PORT, () => {
+  console.log(`Server is running at http://localhost:${PORT}`);
+  console.log(`Swagger UI is available at http://localhost:${PORT}/api-docs`);
+
+  const swaggerUiUrl = `http://localhost:${PORT}/api-docs`;
+  open(swaggerUiUrl)
+    .then(() => {
+      console.log(`Swagger UI opened at ${swaggerUiUrl}`);
+    })
+    .catch((err) => {
+      console.error(`Failed to open Swagger UI: ${err}`);
+    });
 });
 
 export { app };
