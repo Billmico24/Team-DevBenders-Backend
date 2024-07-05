@@ -6,4 +6,14 @@ const specificDayValidation = Joi.object({
   weight: Joi.number().required(),
 });
 
-export { specificDayValidation };
+const productValidation = Joi.object({
+  parameters: {
+    height: Joi.number().required(),
+    age: Joi.number().required(),
+    currentWeight: Joi.number().required(),
+    desiredWeight: Joi.number().required(),
+    bloodType: Joi.string().required(),
+  },
+});
+
+export { specificDayValidation, productValidation };

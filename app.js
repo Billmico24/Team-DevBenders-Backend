@@ -1,16 +1,16 @@
 import express from "express";
 import logger from "morgan";
 import cors from "cors";
-require("dotenv").config();
+// import open from "open";
 
-import specificDayRouter from "./routes/specificDayRoutes.js";
 import swaggerUi from "swagger-ui-express";
-import swaggerSpec from "./swaggerConfig.js";
+import swaggerDocument from "./swagger.json" assert { type: "json" };
 
-import { authRouter } from "./routes/api/authRouter.js";
-import { userRouter } from "./routes/api/userRouter.js";
+// import { authRouter } from "./routes/api/authRouter.js";
+// import { userRouter } from "./routes/api/userRouter.js";
 
 const app = express();
+const PORT = process.env.PORT || 3000;
 
 const formatsLogger = app.get("env") === "development" ? "dev" : "short";
 
@@ -18,11 +18,10 @@ app.use(logger(formatsLogger));
 app.use(cors());
 app.use(express.json());
 
-app.use("/api/auth", authRouter);
-app.use("/api/users", userRouter);
-app.use("/api", specificDayRouter);
+// app.use("/api/auth", authRouter);
+// app.use("/api/users", userRouter);
 
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use((req, res) => {
   res.status(404).json({ message: "Not found" });
@@ -30,6 +29,21 @@ app.use((req, res) => {
 
 app.use((err, req, res, next) => {
   res.status(500).json({ message: err.message });
+});
+
+app.listen(PORT, () => {
+  console.log(`Server is running at http://localhost:${PORT}`);
+  console.log(`Swagger UI is available at http://localhost:${PORT}/api-docs`);
+
+  //uncomment this and "import open from open" to automatically open swagger UI in new tab for checking
+  // const swaggerUiUrl = `http://localhost:${PORT}/api-docs`;
+  // open(swaggerUiUrl)
+  //   .then(() => {
+  //     console.log(`Swagger UI opened at ${swaggerUiUrl}`);
+  //   })
+  //   .catch((err) => {
+  //     console.error(`Failed to open Swagger UI: ${err}`);
+  //   });
 });
 
 export { app };
