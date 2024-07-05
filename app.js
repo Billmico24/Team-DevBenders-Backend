@@ -10,8 +10,8 @@ import productRoutes from './routes/api/productRoutes.js'; // Product routes
 import swaggerUi from "swagger-ui-express";
 import swaggerSpec from "./swaggerConfig.js";
 
-import { authRouter } from "./routes/api/authRouter.js";
-import { userRouter } from "./routes/api/userRouter.js";
+import { router as authRouter } from "./routes/api/authRouter.js";
+import { router as userRouter } from "./routes/api/userRouter.js";
 
 const app = express();
 
