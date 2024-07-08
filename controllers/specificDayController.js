@@ -1,4 +1,4 @@
-import SpecificDay from "../models/specificDay.js";
+import SpecificDay from "../models/specificDayModel.js";
 
 const getDayInfo = async (req, res) => {
   try {
