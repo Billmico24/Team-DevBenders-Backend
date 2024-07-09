@@ -3,14 +3,13 @@ import SpecificDay from "../models/specificDayModel.js";
 const getDayInfo = async (req, res) => {
   try {
     const { date } = req.params;
+    // Find day info by date
     const dayInfo = await SpecificDay.findOne({
       date: new Date(date),
     }).populate("owner", "-password");
 
     if (!dayInfo) {
-      return res
-        .status(404)
-        .json({ message: "No information found for this date" });
+      return res.status(404).json({ message: "No information found for this date" });
     }
 
     res.json(dayInfo);
@@ -21,6 +20,7 @@ const getDayInfo = async (req, res) => {
 
 const addDayInfo = async (req, res) => {
   try {
+    // Create new day info
     const newDayInfo = new SpecificDay(req.body);
     await newDayInfo.save();
     res.status(201).json(newDayInfo);
@@ -32,12 +32,11 @@ const addDayInfo = async (req, res) => {
 const deleteDayInfo = async (req, res) => {
   try {
     const { id } = req.params;
+    // Delete day info by ID
     const deletedDayInfo = await SpecificDay.findByIdAndDelete(id);
 
     if (!deletedDayInfo) {
-      return res
-        .status(404)
-        .json({ message: "No information found for this ID" });
+      return res.status(404).json({ message: "No information found for this ID" });
     }
 
     res.json({ message: "Information deleted successfully" });

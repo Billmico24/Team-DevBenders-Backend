@@ -4,7 +4,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 dotenv.config();
 
-import specificDayRouter from "./routes/api/specificDayRouter.js";
+import specificDayRouter from "./routes/api/specificDayRoutes.js";
 import calorieRoutes from "./routes/api/calorieRoutes.js"; // Calorie routes
 import productRoutes from "./routes/api/productRoutes.js"; // Product routes
 
