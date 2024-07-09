@@ -3,6 +3,7 @@ import "dotenv/config";
 
 const { GMAIL_EMAIL, GMAIL_PASSWORD } = process.env;
 
+
 const nodemailerConfig = {
   service: "Gmail",
   host: "smtp.gmail.com",

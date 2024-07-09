@@ -5,10 +5,9 @@ import dotenv from "dotenv";
 dotenv.config();
 
 import specificDayRouter from "./routes/api/specificDayRoutes.js";
-import calorieRoutes from './routes/api/calorieRoutes.js'; // Calorie routes
-import productRoutes from './routes/api/productRoutes.js'; // Product routes
+import calorieRoutes from "./routes/api/calorieRoutes.js"; // Calorie routes
+import productRoutes from "./routes/api/productRoutes.js"; // Product routes
 
-import open from "open";
 import swaggerDocument from "./swagger.json" assert { type: "json" };
 import swaggerUi from "swagger-ui-express";
 
@@ -39,20 +38,6 @@ app.use((_, res) => {
 app.use((err, _req, res, _next) => {
   const { status = 500, message = "Server error" } = err;
   res.status(status).json({ message });
-});
-
-app.listen(PORT, () => {
-  console.log(`Server is running at http://localhost:${PORT}`);
-  console.log(`Swagger UI is available at http://localhost:${PORT}/api-docs`);
-
-  const swaggerUiUrl = `http://localhost:${PORT}/api-docs`;
-  open(swaggerUiUrl)
-    .then(() => {
-      console.log(`Swagger UI opened at ${swaggerUiUrl}`);
-    })
-    .catch((err) => {
-      console.error(`Failed to open Swagger UI: ${err}`);
-    });
 });
 
 export { app };
