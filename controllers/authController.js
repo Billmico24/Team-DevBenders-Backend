@@ -77,6 +77,7 @@ const signupUser = async (req, res) => {
   // Registration success response
   res.status(201).json({
     user: {
+        
       email: newUser.email,
       subscription: newUser.subscription,
       avatarURL: newUser.avatarURL,

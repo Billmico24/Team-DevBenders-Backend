@@ -6,14 +6,19 @@ import { User } from "../models/usersModel.js";
 // prettier-ignore
 
 const getCurrentUsers = async (req, res) => {
-  const { name, email } = req.user;
 
-  res.json({
-    name,
-    email,
-  });
+    const { _id } = req.user;
+    const result = await User.findOne({ _id });
+    res.status(200).json(result);
+
+//   const { name, email } = req.user;
+//   res.json({
+//     name,
+//     email,
+//   });
 
 };
+
 
 const updateAvatar = async (req, res) => {
 
