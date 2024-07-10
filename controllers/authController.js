@@ -9,7 +9,13 @@ import { httpError } from "../helpers/httpError.js";
 import { sendEmail } from "../helpers/sendEmail.js";
 import { v4 as uuid4 } from "uuid";
 
-const { SECRET_KEY, PORT } = process.env;
+const { SECRET_KEY, REFRESH_SECRET_KEY, PORT } = process.env;
+
+const generateTokens = (payload) => {
+    const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "23h" });
+    const refreshToken = jwt.sign(payload, REFRESH_SECRET_KEY, { expiresIn: "7d" });
+    return { token, refreshToken };
+  };
 
 const signupUser = async (req, res) => {
   const { name, email, password } = req.body;
@@ -96,9 +102,9 @@ const loginUser = async (req, res) => {
   }
 
   // Login auth Check if the user is verified
-  if (!user.verify) {
-    throw httpError(401, "Please verify your email before logging in");
-  }
+//   if (!user.verify) {
+//     throw httpError(401, "Please verify your email before logging in");
+//   }
 
   // Login auth error (password)
   const isPasswordValid = await bcrypt.compare(password, user.password);
@@ -107,13 +113,13 @@ const loginUser = async (req, res) => {
   }
 
   const payload = { id: user._id };
-  const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "23h" });
-
-  await User.findByIdAndUpdate(user._id, { token });
+  const { token, refreshToken } = generateTokens(payload);
+  await User.findByIdAndUpdate(user._id, { token, refreshToken });
 
   //   Login success response
   res.status(200).json({
     token: token,
+    refreshToken: token,
     user: {
       name: user.name,
       email: user.email,
@@ -184,5 +190,24 @@ const resendVerifyEmail = async (req, res) => {
   // Resending a email success response
   res.json({ message: "Verification email sent" });
 };
+
+const refreshToken = async (req, res) => {
+    const { token: oldRefreshToken } = req.body;
+    try {
+      const { id } = jwt.verify(oldRefreshToken, REFRESH_SECRET_KEY);
+      const user = await User.findById(id);
+      if (!user || user.refreshToken !== oldRefreshToken) 
+      {
+        throw httpError(403, "Forbidden");
+      }
+      const payload = { id: user._id };
+      const { token, refreshToken } = generateTokens(payload);
+      await User.findByIdAndUpdate(user._id, { token, refreshToken });
+      res.json({ token, refreshToken });
+    } catch (error) {
+      throw httpError(403, "Invalid refresh token");
+    }
+  };
+
 // prettier-ignore
-export { signupUser, loginUser, logoutUser , verifyEmail, resendVerifyEmail };
+export { signupUser, loginUser, logoutUser , verifyEmail, resendVerifyEmail, refreshToken };

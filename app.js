@@ -17,7 +17,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/users", userRouter);
 
 app.use((req, res) => {
-  res.status(404).json({ message: "Not found" });
+  res.status(404).json({ message: err.message });
 });
 
 app.use((err, req, res, next) => {

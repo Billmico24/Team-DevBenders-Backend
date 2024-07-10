@@ -1,7 +1,7 @@
 import express from "express";
 import { ctrlWrapper } from "../../helpers/ctrlWrapper.js";
 // prettier-ignore
-import { signupUser, loginUser, logoutUser, verifyEmail, resendVerifyEmail} from "../../controllers/authController.js";
+import { signupUser, loginUser, logoutUser, verifyEmail, resendVerifyEmail, refreshToken} from "../../controllers/authController.js";
 import { authenticateToken } from "../../middlewares/authMiddleware.js";
 
 const router = express.Router();
@@ -22,6 +22,9 @@ router.post("/signup", ctrlWrapper(signupUser));
 }
 */
 router.post("/login", ctrlWrapper(loginUser));
+
+//Route for refreshing tokens
+router.post("/refresh", ctrlWrapper(refreshToken)); 
 
 /* GET: // http://localhost:3000/api/users/logout */
 router.get("/logout", authenticateToken, ctrlWrapper(logoutUser));
