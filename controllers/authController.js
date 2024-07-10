@@ -3,14 +3,14 @@ import gravatar from "gravatar";
 import jwt from "jsonwebtoken";
 import "dotenv/config";
 import { User } from "../models/usersModel.js";
-import { signupValidation, loginValidation, emailValidation } from "../validations/validation.js";
+import { signupValidation, loginValidation, emailValidation } from "../validations/joiValidation.js";
 import { httpError } from "../helpers/httpError.js";
 import { sendEmail } from "../helpers/sendEmail.js";
 import { v4 as uuid4 } from "uuid";
 
 const { SECRET_KEY, PORT } = process.env;
 
-const signupUser = async (_req, res) => {
+const signupUser = async (req, res) => {
   const { name, email, password } = req.body;
 
   try {
@@ -20,22 +20,18 @@ const signupUser = async (_req, res) => {
       throw httpError(400, error.message);
     }
 
-    // Check if user already exists
     const userExists = await User.findOne({ email });
     if (userExists) {
       throw httpError(409, "Email already in use");
     }
 
-    // Hash password
     const hashPassword = await bcrypt.hash(password, 10);
 
-    // Create a link to the user's avatar with gravatar
     const avatarURL = gravatar.url(email, { protocol: "http" });
 
-    // Create verification token
+
     const verificationToken = uuid4();
 
-    // Create new user
     const newUser = await User.create({
       name,
       email,
@@ -44,7 +40,6 @@ const signupUser = async (_req, res) => {
       verificationToken,
     });
 
-    // Send verification email
     await sendEmail({
       to: email,
       subject: "Welcome to SLIM MOM Service! Please Verify Your Email",
@@ -68,7 +63,6 @@ const signupUser = async (_req, res) => {
       `,
     });
 
-    // Registration success response
     res.status(201).json({
       user: {
         email: newUser.email,
