@@ -9,7 +9,7 @@
   "produces": ["application/json"],
   "servers": [
     {
-      "url": "https://slimmom-backend-c2se.onrender.com"
+      "url": "https://slimmom-backend-d5lz.onrender.com"
     }
   ],
   "tags": [

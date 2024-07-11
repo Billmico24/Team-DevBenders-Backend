@@ -53,7 +53,7 @@ const getDailyRateController = async (req, res) => {
   try {
     const dailyRate = await calculateDailyRate(req.body);
     const { notAllowedProducts } = await notAllowedProductsObj(req.body.bloodType);
-    return res.status(200).json({ dailyRate, notAllowedProducts, notNotAllowedProductsAll });
+    return res.status(200).json({ dailyRate, notAllowedProducts });
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }
