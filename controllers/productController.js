@@ -78,23 +78,6 @@ const addProduct = async (req, res, next) => {
   }
 };
 
-// const addProduct = async (req, res, next) => {
-//   try {
-//     const { name, description, nutrition } = req.body;
-//     // Create new product
-//     const newProduct = new Product({
-//       name,
-//       description,
-//       nutrition,
-//     });
-
-//     const savedProduct = await newProduct.save();
-//     res.status(201).json(savedProduct);
-//   } catch (error) {
-//     next(error);
-//   }
-// };
-
 const searchProducts = async (req, res, next) => {
   try {
     // Validate the 'name' query parameter using Joi

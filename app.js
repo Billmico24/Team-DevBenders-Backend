@@ -14,7 +14,7 @@ import swaggerDocument from "./swagger.json" assert { type: "json" };
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 
 const formatsLogger = app.get("env") === "development" ? "dev" : "short";
 

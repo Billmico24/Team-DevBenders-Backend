@@ -7,7 +7,7 @@ import {
 
 const router = express.Router();
 
-router.get("/day-info/:date", getDayInfo);
+router.get("/day-info/:date", getDayInfo); // <-- Ensures consistency with frontend
 
 router.post("/day-info", addDayInfo);
 

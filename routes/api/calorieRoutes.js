@@ -18,7 +18,7 @@ router.post('/daily-rate', async (req, res) => {
 });
 
 // Route to calculate daily rate for user
-router.post('/user-daily-rate', async (req, res) => {
+router.post('/daily-rate/:userId', async (req, res) => { // <-- Changed to match frontend
   try {
     const result = await getDailyRateUserController(req, res);
     res.status(200).json(result);
@@ -38,4 +38,3 @@ router.get('/products', async (req, res) => {
 });
 
 export default router;
-
