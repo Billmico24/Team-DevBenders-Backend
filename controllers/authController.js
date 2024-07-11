@@ -11,7 +11,7 @@ import { v4 as uuid4 } from "uuid";
 const { SECRET_KEY, PORT } = process.env;
 
 const signupUser = async (req, res) => {
-  const { name, email, password } = req.body;
+  const { username, email, password } = req.body;
 
   try {
     // Registration validation
@@ -25,19 +25,26 @@ const signupUser = async (req, res) => {
       throw httpError(409, "Email already in use");
     }
 
-    const hashPassword = await bcrypt.hash(password, 10);
-
+    const passwordHash = await bcrypt.hash(password, 10);
     const avatarURL = gravatar.url(email, { protocol: "http" });
-
-
     const verificationToken = uuid4();
 
     const newUser = await User.create({
-      name,
+      username,
       email,
-      password: hashPassword,
+      password: passwordHash,
       avatarURL,
       verificationToken,
+      userData: {
+        weight: 0,
+        height: 0,
+        age: 0,
+        bloodType: 0,
+        desiredWeight: 0,
+        dailyRate: 0,
+        notAllowedProducts: [],
+      },
+      days: [],
     });
 
     await sendEmail({
@@ -65,6 +72,7 @@ const signupUser = async (req, res) => {
 
     res.status(201).json({
       user: {
+        id: newUser._id,
         email: newUser.email,
         subscription: newUser.subscription,
         avatarURL: newUser.avatarURL,
@@ -94,9 +102,9 @@ const loginUser = async (req, res) => {
     }
 
     // Check if user is verified
-    if (!user.verify) {
-      throw httpError(401, "Please verify your email before logging in");
-    }
+    // if (!user.verify) {
+    //   throw httpError(401, "Please verify your email before logging in");
+    // }
 
     // Check password
     const isPasswordValid = await bcrypt.compare(password, user.password);
@@ -200,4 +208,22 @@ const resendVerifyEmail = async (req, res) => {
   }
 };
 
-export { signupUser, loginUser, logoutUser, verifyEmail, resendVerifyEmail };
+const refreshToken = async (req, res) => {
+  const { token: oldRefreshToken } = req.body;
+  try {
+    const { id } = jwt.verify(oldRefreshToken, REFRESH_SECRET_KEY);
+    const user = await User.findById(id);
+    if (!user || user.refreshToken !== oldRefreshToken) 
+    {
+      throw httpError(403, "Forbidden");
+    }
+    const payload = { id: user._id };
+    const { token, refreshToken } = generateTokens(payload);
+    await User.findByIdAndUpdate(user._id, { token, refreshToken });
+    res.json({ token, refreshToken });
+  } catch (error) {
+    throw httpError(403, "Invalid refresh token");
+  }
+};
+
+export { signupUser, loginUser, logoutUser, verifyEmail, resendVerifyEmail, refreshToken };

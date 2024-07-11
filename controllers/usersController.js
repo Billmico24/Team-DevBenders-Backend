@@ -8,7 +8,9 @@ const getCurrentUsers = async (req, res) => {
   const { name, email } = req.user;
 
   try {
-    res.json({ name, email });
+    const { _id } = req.user;
+    const result = await User.findOne({ _id });
+    res.status(200).json(result);
   } catch (error) {
     res.status(error.status || 500).json({ message: error.message || "Server error" });
   }

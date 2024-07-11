@@ -1,6 +1,6 @@
 import express from "express";
 import { ctrlWrapper } from "../../helpers/ctrlWrapper.js";
-import { signupUser, loginUser, logoutUser, verifyEmail, resendVerifyEmail } from "../../controllers/authController.js";
+import { signupUser, loginUser, logoutUser, verifyEmail, resendVerifyEmail, refreshToken } from "../../controllers/authController.js";
 import { authenticateToken } from "../../middlewares/authMiddleware.js";
 
 const router = express.Router();
@@ -13,6 +13,9 @@ router.post("/logout", authenticateToken, ctrlWrapper(logoutUser)); // <-- Chang
 router.get("/verify/:verificationToken", ctrlWrapper(verifyEmail));
 // Removed authenticateToken from resendVerifyEmail endpoint to match frontend
 router.post("/verify", ctrlWrapper(resendVerifyEmail)); // <-- Changed
+
+//Route for refreshing tokens
+router.post("/refresh", ctrlWrapper(refreshToken)); 
 
 export { router as authRouter };
 

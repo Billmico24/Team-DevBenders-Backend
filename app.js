@@ -9,7 +9,7 @@ import productRoutes from "./routes/api/productRoutes.js"; // Product routes
 import specificDayRouter from "./routes/api/specificDayRoutes.js";
 import { authRouter } from "./routes/api/authRouter.js";
 import { userRouter } from "./routes/api/userRouter.js";
-import swaggerDocument from "./swagger.json" assert { type: "json" };
+// import swaggerDocument from "./swagger.json" assert { type: 'json' };
 
 dotenv.config();
 
@@ -28,8 +28,7 @@ app.use("/api/calories", calorieRoutes); // Use calorie routes under /api/calori
 app.use("/api/products", productRoutes); // Use product routes under /api/products
 
 app.use("/api/specific-days", specificDayRouter); // Use specific day routes under /api/specific-days
-
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+// app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Error handling middleware for handling 404 errors
 app.use((_req, res) => {

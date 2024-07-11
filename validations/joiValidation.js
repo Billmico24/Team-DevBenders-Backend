@@ -15,11 +15,12 @@ const specificDayValidation = Joi.object({
 
 // Validation for signup
 const signupValidation = Joi.object({
-  name: Joi.string().required().messages({
+  username: Joi.string().required().messages({
     "any.required": "Missing required name field",
   }),
   email: Joi.string()
-    .email({ minDomainSegments: 2, tlds: { allow: ["com", "net"] } })
+    //.email({ minDomainSegments: 2, tlds: { allow: ["com", "net"] } })
+    .email({ minDomainSegments: 2, tlds: { allow: false } }).required()
     .required()
     .messages({
       "any.required": "Missing required email field",
@@ -35,7 +36,8 @@ const signupValidation = Joi.object({
 // Validation for login
 const loginValidation = Joi.object({
   email: Joi.string()
-    .email({ minDomainSegments: 2, tlds: { allow: ["com", "net"] } })
+    // .email({ minDomainSegments: 2, tlds: { allow: ["com", "net"] } })
+    .email({ minDomainSegments: 2, tlds: { allow: false } }).required()
     .required()
     .messages({
       "any.required": "Missing required email field",
@@ -51,7 +53,8 @@ const loginValidation = Joi.object({
 // Validation for email
 const emailValidation = Joi.object({
   email: Joi.string()
-    .email({ minDomainSegments: 2, tlds: { allow: ["com", "net"] } })
+    // .email({ minDomainSegments: 2, tlds: { allow: ["com", "net"] } })
+    .email({ minDomainSegments: 2, tlds: { allow: false } }).required()
     .required()
     .messages({
       "any.required": "Missing required email field",
