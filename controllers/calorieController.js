@@ -63,17 +63,17 @@ const getDailyRateController = async (req, res) => {
 const getDailyRateUserController = async (req, res) => {
   try {
     const { user } = req;
-    const dailyRate = calculateDailyRate(user.infouser);
-    const { notAllowedProducts } = await notAllowedProductsObj(user.infouser.bloodType);
+    const dailyRate = calculateDailyRate(user.userData);
+    const { notAllowedProducts } = await notAllowedProductsObj(user.userData.bloodType);
 
-    user.infouser = {
-      ...user.infouser,
+    user.userData = {
+      ...user.userData,
       dailyRate,
       notAllowedProducts,
     };
 
     await User.findByIdAndUpdate(user._id, user);
-    return res.status(200).json({ data: user.infouser });
+    return res.status(200).json({ data: user.userData });
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }
