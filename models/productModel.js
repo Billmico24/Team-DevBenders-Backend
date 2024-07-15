@@ -1,31 +1,20 @@
-import { Schema, model } from "mongoose";
+import mongoose from "mongoose";
+
+const { Schema } = mongoose;
 
 const productSchema = new Schema({
-  productInfo: [
-    {
-      productWeight: {
-        type: String,
-      },
-      productCalories: {
-        type: String,
-      },
-      productName: {
-        type: String,
-        required: [true, "productName is required"],
-      },
-    },
-  ],
-  date: {
-    type: String,
-    required: [true, "Date is required"],
-  },
-  owner: {
-    type: Schema.Types.ObjectId,
-    required: true,
-    ref: "user",
+  categories: [String],
+  weight: Number,
+  calories: Number,
+  groupBloodNotAllowed: {
+    0: {},
+    1: Boolean,
+    2: Boolean,
+    3: Boolean,
+    4: Boolean,
   },
 });
 
-const Product = model("Product", productSchema);
+const Product = mongoose.model("Product", productSchema);
 
-export default Product ;
+export default Product;
