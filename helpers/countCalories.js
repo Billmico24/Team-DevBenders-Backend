@@ -4,7 +4,7 @@ import { httpError } from "../helpers/httpError.js";
 const countCalories = async (productName, productWeight) => {
   try {
     const product = await Product.findOne({
-      "title.ua": productName,
+      "title.ua": productName, //supposed to be english
     });
 
     if (!product) {

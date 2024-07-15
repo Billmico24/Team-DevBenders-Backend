@@ -2,13 +2,13 @@ import express from "express";
 import logger from "morgan";
 import cors from "cors";
 import dotenv from "dotenv";
-import swaggerUi from "swagger-ui-express";
+// import swaggerUi from "swagger-ui-express";
 
-import calorieRoutes from "./routes/api/calorieRoutes.js"; // Calorie routes
-import productRoutes from "./routes/api/productRoutes.js"; // Product routes
 import { specificDayRouter } from "./routes/api/specificDayRoutes.js";
 import { authRouter } from "./routes/api/authRouter.js";
 import { userRouter } from "./routes/api/userRouter.js";
+import { dailyRateRouter } from "./routes/api/dailyRateRouter.js";
+import { productRouter } from "./routes/api/productRouter.js";
 // import swaggerDocument from "./swagger.json" assert { type: 'json' };
 
 dotenv.config();
@@ -24,9 +24,10 @@ app.use(express.json());
 
 app.use("/api/auth", authRouter);
 app.use("/api/users", userRouter);
-app.use("/api/daily-rate", calorieRoutes); // Use calorie routes under /api/calories
-app.use("/api/product", productRoutes); // Use product routes under /api/products
-app.use("/api/day", specificDayRouter); // Use specific day routes under /api/specific-days
+app.use("/api/daily-rate", dailyRateRouter); // Use calorie routes under /api/calories
+app.use("/api/product", productRouter); //  // Use product routes under /api/products
+
+app.use("/api/specific-days", specificDayRouter); // Use specific day routes under /api/specific-days
 // app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Error handling middleware for handling 404 errors
