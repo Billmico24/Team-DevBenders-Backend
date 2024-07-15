@@ -2,7 +2,7 @@ import { Schema, model } from "mongoose";
 
 const userSchema = new Schema(
   {
-    name: {
+    username: {
         type: String,
         required: [true, "Name is required"],
       },
@@ -30,30 +30,30 @@ const userSchema = new Schema(
       type: String,
       required: [true, "Verify token is required"],
     },
-    infouser: {
-        currentWeight: {
+    userData: {
+        weight: {
           type: Number,
-          default: null
+          default: 0
         },
         height: {
           type: Number,
-          default: null
+          default: 0
         },
         age: {
+          type: Number,
+          default: 0
+        },
+        bloodType: {
           type: Number,
           default: null
         },
         desiredWeight: {
           type: Number,
-          default: null
+          default: 0
         },
-        bloodType: {
-          type: Number,
-          default: null
-        }, 
         dailyRate: {
           type: Number,
-          default: null
+          default: 0
         },
         notAllowedProducts: {
           type: [String],
@@ -63,8 +63,10 @@ const userSchema = new Schema(
           type: [String],
           default: null
         }, 
-      }
+      },
+    days: [{ type: Schema.Types.ObjectId, ref: "Day" }],
   },
+  
   { versionKey: false }
 );
 

@@ -1,4 +1,4 @@
-import SpecificDay from "../models/specificDayModel.js";
+import { SpecificDay } from "../models/specificDayModel.js";
 
 const getDayInfo = async (req, res) => {
   try {
@@ -21,10 +21,13 @@ const getDayInfo = async (req, res) => {
 const addDayInfo = async (req, res) => {
   try {
     // Create new day info
+    console.log(req.body,'req.body as addDayInfo');
     const newDayInfo = new SpecificDay(req.body);
     await newDayInfo.save();
     res.status(201).json(newDayInfo);
   } catch (error) {
+    console.log(error, 'Error in addDayInfo'); // Log the error
+    console.log(req.body,'req.body as addDayInfo');
     res.status(500).json({ message: "Server error", error });
   }
 };

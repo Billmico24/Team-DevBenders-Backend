@@ -1,26 +1,43 @@
 import express from 'express';
-import { check } from 'express-validator';
-import { getPublicCalorieInfo, getPrivateCalorieInfo } from '../../controllers/calorieController.js';
-import authMiddleware from '../../middlewares/authMiddleware.js';
-
+import {
+  getDailyRateController,
+  getDailyRateUserController,
+  getAllProductsByQuery,
+} from '../../controllers/calorieController.js';
+import { authenticateToken } from "../../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
-// Public endpoint
-router.get('/public-calorie-info', getPublicCalorieInfo);
+// Route to calculate daily rate
+router.post('/daily-rate', async (req, res) => {
+  try {
+    const result = await getDailyRateController(req, res);
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 
-// Private endpoint
-router.post(
-    '/private-calorie-info',
-    [
-      authMiddleware,
-      check('weight').isNumeric().withMessage('Weight must be a number'),
-      check('height').isNumeric().withMessage('Height must be a number'),
-      check('age').isNumeric().withMessage('Age must be a number'),
-      check('desiredWeight').isNumeric().withMessage('Desired weight must be a number')
-    ],
-    getPrivateCalorieInfo
-  );
-  
+// Route to calculate daily rate for user
+// router.post('/:userId', async (req, res) => { // <-- Changed to match frontend
+//   try {
+//     const result = await getDailyRateUserController(req, res);
+//     res.status(200).json(result);
+//   } catch (error) {
+//     res.status(500).json({ error: error.message });
+//   }
+// });
+
+router.post("/:userId", authenticateToken, getDailyRateUserController);
+
+// Route to get products by query
+router.get('/products', async (req, res) => {
+  try {
+    const result = await getAllProductsByQuery(req, res);
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 
 export default router;

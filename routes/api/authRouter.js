@@ -1,39 +1,37 @@
 import express from "express";
 import { ctrlWrapper } from "../../helpers/ctrlWrapper.js";
-// prettier-ignore
-import { signupUser, loginUser, logoutUser, verifyEmail, resendVerifyEmail} from "../../controllers/authController.js";
+import { signupUser, loginUser, logoutUser, verifyEmail, resendVerifyEmail, refreshToken } from "../../controllers/authController.js";
 import { authenticateToken } from "../../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
-/* POST: // http://localhost:3000/api/users/signup
-{
-  "name" : "johndoee@gmail.com",
-  "email": "example@example.com",
-  "password": "examplepassword"
-}
-*/
-router.post("/signup", ctrlWrapper(signupUser));
-
-/* POST: // http://localhost:3000/api/users/login
-{
-  "email": "example@example.com",
-  "password": "examplepassword"
-}
-*/
+// Changed "/signup" to "/register" to match frontend
+router.post("/register", ctrlWrapper(signupUser)); // <-- Changed
 router.post("/login", ctrlWrapper(loginUser));
-
-/* GET: // http://localhost:3000/api/users/logout */
-router.get("/logout", authenticateToken, ctrlWrapper(logoutUser));
-
-/* GET: // http://localhost:3000/api/users/verify/:verificationToken */
+// Changed "/logout" method from GET to POST to match frontend
+router.post("/logout", authenticateToken, ctrlWrapper(logoutUser)); // <-- Changed
 router.get("/verify/:verificationToken", ctrlWrapper(verifyEmail));
+// Removed authenticateToken from resendVerifyEmail endpoint to match frontend
+router.post("/verify", ctrlWrapper(resendVerifyEmail)); // <-- Changed
 
-/* POST: // http://localhost:3000/api/users/verify 
-{
-  "email": "example@example.com",
-}
-*/
+//Route for refreshing tokens
+router.post("/refresh", ctrlWrapper(refreshToken)); 
+
+export { router as authRouter };
+
+
+
+/* import express from "express";
+import { ctrlWrapper } from "../../helpers/ctrlWrapper.js";
+import { signupUser, loginUser, logoutUser, verifyEmail, resendVerifyEmail } from "../../controllers/authController.js";
+import { authenticateToken } from "../../middlewares/authMiddleware.js";
+
+const router = express.Router();
+
+router.post("/signup", ctrlWrapper(signupUser));
+router.post("/login", ctrlWrapper(loginUser));
+router.get("/logout", authenticateToken, ctrlWrapper(logoutUser));
+router.get("/verify/:verificationToken", ctrlWrapper(verifyEmail));
 router.post("/verify", authenticateToken, ctrlWrapper(resendVerifyEmail));
 
-export { router };
+export { router as authRouter }; */

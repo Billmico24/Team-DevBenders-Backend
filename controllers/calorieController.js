@@ -1,42 +1,122 @@
-import NonRecommendedFood from "../models/nonRecommendedFoodModel.js";
-import UserCalorieIntake from "../models/userCalorieIntakeModel.js";
+import { Product } from "../models/productModel.js";
+import { User } from "../models/usersModel.js";
+import { httpError } from "../helpers/httpError.js";
 
-const calculateDailyCalories = (weight, height, age, desiredWeight) => {
-  return 10 * weight + 6.25 * height - 5 * age - 161 - 10 * (weight - desiredWeight);
+// Function to calculate daily rate
+const calculateDailyRate = ({ currentWeight, height, age, desiredWeight }) => {
+  return Math.floor(
+    10 * currentWeight +
+    6.25 * height -
+    5 * age -
+    161 - 10 * (currentWeight - desiredWeight),
+  );
 };
 
-const getPublicCalorieInfo = async (_req, res) => {
+// Function to get products not allowed based on blood type
+const getNotAllowedProducts = async (bloodType) => {
+  const blood = [null, false, false, false, false];
+  blood[bloodType] = true;
+  const products = await Product.find({
+    groupBloodNotAllowed: { $all: [blood] },
+  });
+  return products;
+};
+
+// Function to generate not allowed products object
+const notAllowedProductsObj = async (bloodType) => {
+  const notAllowedProductsArray = await getNotAllowedProducts(bloodType);
+  const arr = [];
+  notAllowedProductsArray.forEach(({ title }) => arr.push(title.ua));
+  let notAllowedProductsAll = [...new Set(arr)];
+  let notAllowedProducts = [];
+  const message = ['You can eat everything'];
+  if (notAllowedProductsAll[0] === undefined) {
+    notAllowedProducts = message;
+  } else {
+    do {
+      const index = Math.floor(Math.random() * notAllowedProductsAll.length);
+      if (notNotAllowedProducts.includes(notAllowedProductsAll[index]) || notNotAllowedProducts.includes('undefined')) {
+        break;
+      } else {
+        notNotAllowedProducts.push(notAllowedProductsAll[index]);
+      }
+    } while (notNotAllowedProducts.length !== 5);
+  }
+  if (notAllowedProductsAll.length === 0) {
+    notAllowedProductsAll = message;
+  }
+  const result = { notAllowedProductsAll, notNotAllowedProducts };
+  return result;
+};
+
+// Function to get daily rate controller
+const getDailyRateController = async (req, res) => {
   try {
-    // Fetch non-recommended foods
-    const nonRecommendedFoods = await NonRecommendedFood.find();
-    res.json({ nonRecommendedFoods });
+    const dailyRate = await calculateDailyRate(req.body);
+    const { notAllowedProducts } = await notAllowedProductsObj(req.body.bloodType);
+    return res.status(200).json({ dailyRate, notAllowedProducts });
   } catch (error) {
-    res.status(500).json({ message: "Error retrieving non-recommended foods", error: error.message });
+    return res.status(500).json({ error: error.message });
   }
 };
 
-const getPrivateCalorieInfo = async (req, res) => {
-  const { userId } = req.user;
-  const { weight, height, age, desiredWeight } = req.body;
+// Function to get daily rate user controller
+const getDailyRateUserController = async (req, res) => {
+  // try {
+    const { User } = req;
 
+    console.log(User,'user getDailyRateUserController');
+    
+    const dailyRate = calculateDailyRate(User.userData);
+    const { notAllowedProducts } = await notAllowedProductsObj(User.userData.bloodType);
+
+    User.userData = {
+      ...User.userData,
+      dailyRate,
+      notAllowedProducts,
+    };
+
+    await User.findByIdAndUpdate(user._id, user);
+    return res.status(200).json({ data: user.userData });
+  // } catch (error) {
+  //   return res.status(500).json({ error: error.message });
+  // }
+};
+
+// Function to get all products by query
+const getAllProductsByQuery = async (req, res, next) => {
   try {
-    // Calculate daily calorie intake
-    const dailyCalorieIntake = calculateDailyCalories(weight, height, age, desiredWeight);
+    const { query: { title, limit = 10 } } = req;
+    const titleFromUrl = decodeURI(title).trim();
+    let products = await Product.find({
+      $or: [
+        { $text: { $search: titleFromUrl } },
+      ],
+    }).limit(limit);
+    
+    if (products.length === 0) {
+      products = await Product.find({
+        $or: [
+          { 'title.ua': { $regex: titleFromUrl, $options: 'i' } },
+        ],
+      }).limit(limit);
+    }
 
-    // Save user calorie intake
-    const userCalorieIntake = new UserCalorieIntake({
-      userId,
-      dailyCalorieIntake,
-    });
-    await userCalorieIntake.save();
+    if (products.length === 0) {
+      return next(httpError(404)); // Using httpError from existing module
+    }
 
-    // Fetch non-recommended foods
-    const nonRecommendedFoods = await NonRecommendedFood.find();
-
-    res.json({ dailyCalorieIntake, nonRecommendedFoods });
+    return res.status(200).json({ data: products });
   } catch (error) {
-    res.status(500).json({ message: "Error calculating daily calorie intake", error: error.message });
+    return res.status(500).json({ error: error.message });
   }
 };
 
-export { getPublicCalorieInfo, getPrivateCalorieInfo };
+export {
+  getDailyRateController,
+  getDailyRateUserController,
+  getAllProductsByQuery,
+  calculateDailyRate,
+  getNotAllowedProducts,
+  notAllowedProductsObj,
+};
