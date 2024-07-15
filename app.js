@@ -27,7 +27,7 @@ app.use("/api/users", userRouter);
 app.use("/api/daily-rate", dailyRateRouter); // Use calorie routes under /api/calories
 app.use("/api/product", productRouter); //  // Use product routes under /api/products
 
-app.use("/api/specific-days", specificDayRouter); // Use specific day routes under /api/specific-days
+app.use("/api/day", specificDayRouter); // Use specific day routes under /api/specific-days
 // app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Error handling middleware for handling 404 errors
