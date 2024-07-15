@@ -19,4 +19,5 @@ const specificDaySchema = new Schema(
 
 const SpecificDay = model("SpecificDay", specificDaySchema);
 
-export default SpecificDay;
+//export default SpecificDay;
+export { SpecificDay };

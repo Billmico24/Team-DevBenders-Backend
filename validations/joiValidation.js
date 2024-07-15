@@ -65,7 +65,7 @@ const emailValidation = Joi.object({
 // Validation for Product
 
 const searchProductValidation = Joi.object({
-  name: Joi.string().required().min(1).max(50)  // Example: Ensure 'name' is a required string between 1 and 50 characters
+  search: Joi.string().required().min(1).max(50)  // Example: Ensure 'name' is a required string between 1 and 50 characters
     .messages({
       'string.base': 'Name must be a string',
       'string.empty': 'Name cannot be empty',

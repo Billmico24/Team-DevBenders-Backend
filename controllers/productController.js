@@ -1,4 +1,4 @@
-import Product from "../models/productModel.js";
+import { Product } from "../models/productModel.js";
 import countCalories from "../helpers/countCalories.js";
 import { searchProductValidation, addProductValidation, deleteProductValidation } from "../validations/joiValidation.js";
 
@@ -89,13 +89,13 @@ const searchProducts = async (req, res, next) => {
     }
 
     // Destructure the validated 'value' object to get the 'name' parameter
-    const { name } = value;
+    const { search } = value;
 
     // Log the search query for debugging
-    console.log(`Searching for products with name: ${name}`);
+    console.log(`Searching for products with name: ${search}`);
 
     // Search products by name using regex
-    const products = await Product.find({ name: { $regex: name, $options: "i" } });
+    const products = await Product.find({ title: { $regex: search, $options: "i" } });
 
     // Respond with the found products
     res.json({ products });

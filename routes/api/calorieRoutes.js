@@ -4,6 +4,7 @@ import {
   getDailyRateUserController,
   getAllProductsByQuery,
 } from '../../controllers/calorieController.js';
+import { authenticateToken } from "../../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
@@ -18,14 +19,16 @@ router.post('/daily-rate', async (req, res) => {
 });
 
 // Route to calculate daily rate for user
-router.post('/daily-rate/:userId', async (req, res) => { // <-- Changed to match frontend
-  try {
-    const result = await getDailyRateUserController(req, res);
-    res.status(200).json(result);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
+// router.post('/:userId', async (req, res) => { // <-- Changed to match frontend
+//   try {
+//     const result = await getDailyRateUserController(req, res);
+//     res.status(200).json(result);
+//   } catch (error) {
+//     res.status(500).json({ error: error.message });
+//   }
+// });
+
+router.post("/:userId", authenticateToken, getDailyRateUserController);
 
 // Route to get products by query
 router.get('/products', async (req, res) => {

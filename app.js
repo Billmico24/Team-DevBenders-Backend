@@ -6,7 +6,7 @@ import swaggerUi from "swagger-ui-express";
 
 import calorieRoutes from "./routes/api/calorieRoutes.js"; // Calorie routes
 import productRoutes from "./routes/api/productRoutes.js"; // Product routes
-import specificDayRouter from "./routes/api/specificDayRoutes.js";
+import { specificDayRouter } from "./routes/api/specificDayRoutes.js";
 import { authRouter } from "./routes/api/authRouter.js";
 import { userRouter } from "./routes/api/userRouter.js";
 // import swaggerDocument from "./swagger.json" assert { type: 'json' };
@@ -24,16 +24,15 @@ app.use(express.json());
 
 app.use("/api/auth", authRouter);
 app.use("/api/users", userRouter);
-app.use("/api/calories", calorieRoutes); // Use calorie routes under /api/calories
-app.use("/api/products", productRoutes); // Use product routes under /api/products
-
-app.use("/api/specific-days", specificDayRouter); // Use specific day routes under /api/specific-days
+app.use("/api/daily-rate", calorieRoutes); // Use calorie routes under /api/calories
+app.use("/api/product", productRoutes); // Use product routes under /api/products
+app.use("/api/day", specificDayRouter); // Use specific day routes under /api/specific-days
 // app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Error handling middleware for handling 404 errors
-app.use((_req, res) => {
-  res.status(404).json({ message: "Not found" });
-});
+// app.use((_req, res) => {
+//   res.status(404).json({ message: "Not found" });
+// });
 
 // General error handling middleware for server errors
 app.use((err, _req, res, _next) => {

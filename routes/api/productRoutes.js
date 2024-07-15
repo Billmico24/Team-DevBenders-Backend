@@ -4,6 +4,7 @@ import { searchProducts, addProduct, deleteProduct } from '../../controllers/pro
 const router = express.Router();
 
 // Removed '/products' prefix to match frontend
+
 router.get('/', searchProducts); // <-- Changed
 router.post('/', addProduct); // <-- Changed
 router.delete('/:productId', deleteProduct); // <-- Changed

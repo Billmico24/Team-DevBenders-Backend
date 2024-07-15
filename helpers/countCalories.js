@@ -1,4 +1,4 @@
-import Product from "../models/productModel.js";
+import { Product } from "../models/productModel.js";
 import { httpError } from "../helpers/httpError.js";
 
 const countCalories = async (productName, productWeight) => {

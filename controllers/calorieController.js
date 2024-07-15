@@ -1,4 +1,5 @@
-import { Product, User } from "../models/calorieModel.js";
+import { Product } from "../models/productModel.js";
+import { User } from "../models/usersModel.js";
 import { httpError } from "../helpers/httpError.js";
 
 // Function to calculate daily rate
@@ -61,22 +62,25 @@ const getDailyRateController = async (req, res) => {
 
 // Function to get daily rate user controller
 const getDailyRateUserController = async (req, res) => {
-  try {
-    const { user } = req;
-    const dailyRate = calculateDailyRate(user.userData);
-    const { notAllowedProducts } = await notAllowedProductsObj(user.userData.bloodType);
+  // try {
+    const { User } = req;
 
-    user.userData = {
-      ...user.userData,
+    console.log(User,'user getDailyRateUserController');
+    
+    const dailyRate = calculateDailyRate(User.userData);
+    const { notAllowedProducts } = await notAllowedProductsObj(User.userData.bloodType);
+
+    User.userData = {
+      ...User.userData,
       dailyRate,
       notAllowedProducts,
     };
 
     await User.findByIdAndUpdate(user._id, user);
     return res.status(200).json({ data: user.userData });
-  } catch (error) {
-    return res.status(500).json({ error: error.message });
-  }
+  // } catch (error) {
+  //   return res.status(500).json({ error: error.message });
+  // }
 };
 
 // Function to get all products by query

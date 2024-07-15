@@ -7,10 +7,11 @@ import {
 
 const router = express.Router();
 
-router.get("/day-info/:date", getDayInfo); // <-- Ensures consistency with frontend
+// daily-rate
+console.log('sulod specificDayRoutes');
 
-router.post("/day-info", addDayInfo);
+router.get("/info/:date", getDayInfo); // <-- Ensures consistency with frontend
+router.post("/info", addDayInfo);
+router.delete("/info/:id", deleteDayInfo);
 
-router.delete("/day-info/:id", deleteDayInfo);
-
-export default router;
+export { router as specificDayRouter};
