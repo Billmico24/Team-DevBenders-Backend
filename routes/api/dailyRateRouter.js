@@ -34,10 +34,12 @@ const userIdSchema = Joi.object({
 const router = Router();
 
 router.post("/", validation(getDailyRateSchema), ctrlWrapper(countDailyRate));
+
+// get daily rate per userid
 router.post(
   "/:userId",
   ctrlWrapper(authenticateToken),
-  validation(userIdSchema, ReqBodyParts.PARAMS), // Using ReqBodyParts.PARAMS
+  // validation(userIdSchema, "PARAMS"), // Using ReqBodyParts.PARAMS
   validation(getDailyRateSchema),
   ctrlWrapper(countDailyRate)
 );  

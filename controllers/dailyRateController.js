@@ -4,7 +4,8 @@ import Summary from "../models/summaryModel.js";
 
 export const countDailyRate = async (req, res) => {
   const { height, weight, age, desiredWeight, bloodType } = req.body;
-  const { userId } = req.params;
+  const { _id } = req.params;
+  const userId = _id;
   const dailyRate =
     10 * weight + 6.25 * height - 5 * age - 161 - 10 * (weight - desiredWeight);
   let notAllowedProductsObj = [];
