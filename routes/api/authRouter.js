@@ -1,37 +1,14 @@
-import express from "express";
-import { ctrlWrapper } from "../../helpers/ctrlWrapper.js";
-import { signupUser, loginUser, logoutUser, verifyEmail, resendVerifyEmail, refreshToken } from "../../controllers/authController.js";
-import { authenticateToken } from "../../middlewares/authMiddleware.js";
+const express = require("express");
+
+const { validation, auth, ctrlWrapper, joiUpdateDailyRateSchema, joiSignupSchema, joiLoginSchema } = require("../../middlewares");
+const { users: ctrl } = require("../../controllers");
 
 const router = express.Router();
 
-// Changed "/signup" to "/register" to match frontend
-router.post("/register", ctrlWrapper(signupUser)); // <-- Changed
-router.post("/login", ctrlWrapper(loginUser));
-// Changed "/logout" method from GET to POST to match frontend
-router.post("/logout", authenticateToken, ctrlWrapper(logoutUser)); // <-- Changed
-router.get("/verify/:verificationToken", ctrlWrapper(verifyEmail));
-// Removed authenticateToken from resendVerifyEmail endpoint to match frontend
-router.post("/verify", ctrlWrapper(resendVerifyEmail)); // <-- Changed
+router.post("/signup", validation(joiSignupSchema), ctrlWrapper(ctrl.signup));
+router.post("/login", validation(joiLoginSchema), ctrlWrapper(ctrl.login));
+router.get("/current", auth, ctrlWrapper(ctrl.getCurrent));
+router.put("/infouser", auth, validation(joiUpdateDailyRateSchema), ctrlWrapper(ctrl.updateById));
+router.post("/logout", auth, ctrlWrapper(ctrl.logout));
 
-//Route for refreshing tokens
-router.post("/refresh", ctrlWrapper(refreshToken)); 
-
-export { router as authRouter };
-
-
-
-/* import express from "express";
-import { ctrlWrapper } from "../../helpers/ctrlWrapper.js";
-import { signupUser, loginUser, logoutUser, verifyEmail, resendVerifyEmail } from "../../controllers/authController.js";
-import { authenticateToken } from "../../middlewares/authMiddleware.js";
-
-const router = express.Router();
-
-router.post("/signup", ctrlWrapper(signupUser));
-router.post("/login", ctrlWrapper(loginUser));
-router.get("/logout", authenticateToken, ctrlWrapper(logoutUser));
-router.get("/verify/:verificationToken", ctrlWrapper(verifyEmail));
-router.post("/verify", authenticateToken, ctrlWrapper(resendVerifyEmail));
-
-export { router as authRouter }; */
+module.exports = router;
