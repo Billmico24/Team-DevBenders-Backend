@@ -11,7 +11,11 @@ import { v4 as uuid4 } from "uuid";
 const { SECRET_KEY, PORT } = process.env;
 
 const signupUser = async (req, res) => {
-  const { username, email, password } = req.body;
+  // const { username, email, password } = req.body;
+  const { username, email, password, weight, 
+          height, age, bloodType, desiredWeight, 
+          dailyRate, notAllowedProducts, 
+          notAllowedProductsAll} = req.body;
 
   try {
     // Registration validation
@@ -29,6 +33,10 @@ const signupUser = async (req, res) => {
     const avatarURL = gravatar.url(email, { protocol: "http" });
     const verificationToken = uuid4();
 
+    // const result = await User.create({ name, email, password: hashPassword, 
+    //   infouser: {currentWeight, height, age, desiredWeight, bloodType, dailyRate, 
+    //     notAllowedProducts, notAllowedProductsAll}});
+    
     const newUser = await User.create({
       username,
       email,
@@ -36,39 +44,39 @@ const signupUser = async (req, res) => {
       avatarURL,
       verificationToken,
       userData: {
-        weight: 0,
-        height: 0,
-        age: 0,
-        bloodType: 0,
-        desiredWeight: 0,
-        dailyRate: 0,
-        notAllowedProducts: [],
+        weight: weight,
+        height: height,
+        age: age,
+        bloodType: bloodType,
+        desiredWeight: desiredWeight,
+        dailyRate: dailyRate,
+        notAllowedProductsAll: notAllowedProductsAll,
       },
       days: [],
     });
 
-    await sendEmail({
-      to: email,
-      subject: "Welcome to SLIM MOM Service! Please Verify Your Email",
-      html: `
-        <div style="font-family: Arial, sans-serif; color: #333;">
-          <h2>Welcome to SLIM MOM Service!</h2>
-          <p>Hi there,</p>
-          <p>Thank you for signing up. Please confirm your email address by clicking the link below:</p>
-          <p>
-            <a 
-              href="http://localhost:${PORT}/api/auth/verify/${verificationToken}" 
-              style="display: inline-block; padding: 10px 20px; color: #fff; background-color: #007BFF; text-decoration: none; border-radius: 5px;"
-              target="_blank"
-            >
-              Verify Your Email
-            </a>
-          </p>
-          <p>If you didn't sign up for our service, please ignore this email.</p>
-          <p>Best regards,<br>Team DevBenders</p>
-        </div>
-      `,
-    });
+    // await sendEmail({
+    //   to: email,
+    //   subject: "Welcome to SLIM MOM Service! Please Verify Your Email",
+    //   html: `
+    //     <div style="font-family: Arial, sans-serif; color: #333;">
+    //       <h2>Welcome to SLIM MOM Service!</h2>
+    //       <p>Hi there,</p>
+    //       <p>Thank you for signing up. Please confirm your email address by clicking the link below:</p>
+    //       <p>
+    //         <a 
+    //           href="http://localhost:${PORT}/api/auth/verify/${verificationToken}" 
+    //           style="display: inline-block; padding: 10px 20px; color: #fff; background-color: #007BFF; text-decoration: none; border-radius: 5px;"
+    //           target="_blank"
+    //         >
+    //           Verify Your Email
+    //         </a>
+    //       </p>
+    //       <p>If you didn't sign up for our service, please ignore this email.</p>
+    //       <p>Best regards,<br>Team DevBenders</p>
+    //     </div>
+    //   `,
+    // });
 
     res.status(201).json({
       user: {

@@ -13,18 +13,19 @@ mongoose
     app.listen(PORT, () =>
       console.log(`Server running. Use our API on port: ${PORT}`)
     );
-    console.log(`Swagger UI is available at http://localhost:${PORT}/api-docs`);
 
+    // console.log(`Swagger UI is available at http://localhost:${PORT}/api-docs`);
     // swagger auto open in new tab, commit below lines to disable
-    const swaggerUiUrl = `http://localhost:${PORT}/api-docs`;
-    open(swaggerUiUrl)
-      .then(() => {
-        console.log(`Swagger UI opened at ${swaggerUiUrl}`);
-      })
-      .catch((err) => {
-        console.error(`Failed to open Swagger UI: ${err}`);
-      });
+    // const swaggerUiUrl = `http://localhost:${PORT}/api-docs`;
+    // open(swaggerUiUrl)
+    //   .then(() => {
+    //     console.log(`Swagger UI opened at ${swaggerUiUrl}`);
+    //   })
+    //   .catch((err) => {
+    //     console.error(`Failed to open Swagger UI: ${err}`);
+    //   });
     // commit up to line above
+    
   })
   .catch((err) => {
     console.log(`Server not running. Error message: ${err.message}`);

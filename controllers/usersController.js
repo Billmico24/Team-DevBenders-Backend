@@ -5,7 +5,7 @@ import fs from "fs/promises";
 import { User } from "../models/usersModel.js";
 
 const getCurrentUsers = async (req, res) => {
-  const { name, email } = req.user;
+  // const { name, email } = req.user;
 
   try {
     const { _id } = req.user;
