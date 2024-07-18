@@ -1,807 +1,398 @@
 {
-  "openapi": "3.0.1",
+  "openapi": "3.0.0",
   "info": {
-    "version": "1.0.0",
-    "title": "Slim Mom",
-    "description": "Slim Mom Team 3 Project"
+    "title": "Slimmom",
+    "version": "1.0.0"
   },
-  "consumes": ["application/json"],
-  "produces": ["application/json"],
   "servers": [
     {
-      "url": "https://slimmom-backend-d5lz.onrender.com"
+      "url": "http://localhost:3000"
+    },
+    {
+      "url": "https://slimmom-backend-team-devbenders.onrender.com"
     }
   ],
-  "tags": [
-    {
-      "name": "Auth",
-      "description": "Authorization endpoints"
-    },
-    {
-      "name": "Users",
-      "description": "User endpoints"
-    },
-    {
-      "name": "Products",
-      "description": "Products endpoints"
-    },
-    {
-      "name": "Tracker",
-      "description": "Tracker endpoints"
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      },
+      "noauthAuth": {
+        "type": "http",
+        "scheme": "noauth"
+      }
     }
-  ],
-
+  },
   "paths": {
-    "/api/auth/signup": {
+    "/api/users/signup": {
       "post": {
-        "tags": ["Auth"],
-        "summary": "User registration",
-        "parameters": [],
-        "security": [
-          {
-            "Bearer": []
-          }
+        "tags": [
+          "default"
         ],
+        "summary": "Signup",
+        "description": "Use for sign up registration",
         "requestBody": {
-          "description": "Registration object",
-          "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/RegistrationRequest"
+                "type": "object",
+                "example": {
+                  "name": "Example Name",
+                  "email": "example@mail.com",
+                  "password": "examplepassword"
+                }
               }
             }
           }
         },
         "responses": {
-          "201": {
-            "description": "Success",
+          "200": {
+            "description": "Successful response",
             "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/RegistrationResponse"
-                }
-              }
+              "application/json": {}
             }
-          },
-          "400": {
-            "description": "Bad request (invalid request body)",
-            "content": {}
-          },
-          "404": {
-            "description": "Not found",
-            "content": {}
-          },
-          "409": {
-            "description": "Provided email already exists",
-            "content": {}
-          },
-          "500": {
-            "description": "Server error",
-            "content": {}
           }
         }
       }
     },
-    "/api/auth/login": {
+    "/api/users/login": {
       "post": {
-        "tags": ["Auth"],
-        "summary": "User authorization",
-        "parameters": [],
-        "security": [
-          {
-            "Bearer": []
-          }
+        "tags": [
+          "default"
         ],
+        "summary": "Login",
+        "description": "User login",
         "requestBody": {
-          "description": "Authorization's object",
-          "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/AuthorizationRequest"
+                "type": "object",
+                "example": {
+                  "email": "example@mail.com",
+                  "password": "examplepassword"
+                }
               }
             }
           }
         },
         "responses": {
-          "201": {
-            "description": "Success",
+          "200": {
+            "description": "Successful response",
             "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AuthorizationResponse"
-                }
-              }
+              "application/json": {}
             }
-          },
-          "400": {
-            "description": "Bad request (invalid request body)",
-            "content": {}
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {}
-          },
-          "404": {
-            "description": "Not found",
-            "content": {}
-          },
-          "500": {
-            "description": "Server error",
-            "content": {}
           }
         }
       }
     },
-    "/api/auth/logout": {
+    "/api/users/logout": {
+      "post": {
+        "tags": [
+          "default"
+        ],
+        "summary": "Logout",
+        "description": "User logout",
+        "requestBody": {
+          "content": {}
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+    "/api/products/searchProducts": {
       "get": {
-        "tags": ["Auth"],
-        "summary": "User logout",
-        "parameters": [],
+        "tags": [
+          "default"
+        ],
+        "summary": "SearchProducts",
+        "description": "Search products from the database by query",
         "security": [
           {
-            "Bearer": []
+            "bearerAuth": []
           }
         ],
-        "requestBody": {
-          "description": "logout's object",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/LogoutRequest"
-              }
-            }
+        "parameters": [
+          {
+            "name": "title",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "example": "Am"
           }
-        },
+        ],
         "responses": {
-          "201": {
-            "description": "Success",
-            "content": {}
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {}
-          },
-          "404": {
-            "description": "Not found",
-            "content": {}
-          },
-          "500": {
-            "description": "Server error",
-            "content": {}
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
+            }
           }
         }
       }
     },
     "/api/users/current": {
       "get": {
-        "tags": ["Users"],
-        "summary": "Check user's status",
-        "parameters": [],
+        "tags": [
+          "default"
+        ],
+        "summary": "Current",
+        "description": "User current status or information",
         "security": [
           {
-            "Bearer": []
+            "bearerAuth": []
           }
         ],
-        "requestBody": {
-          "description": "User's object",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UsersCurrentRequest"
-              }
-            }
-          }
-        },
         "responses": {
-          "201": {
-            "description": "Success",
+          "200": {
+            "description": "Successful response",
             "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UsersCurrentResponse"
-                }
-              }
+              "application/json": {}
             }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {}
           }
         }
       }
     },
-    "/api/products/calculatorPagePublic": {
+    "/api/myProducts/listMyProduct": {
       "post": {
-        "tags": ["Products"],
-        "summary": "Get user's public products",
-        "parameters": [],
-        "security": [
-          {
-            "Bearer": []
-          }
+        "tags": [
+          "default"
         ],
+        "summary": "ListMyProducts",
+        "description": "This will fetch the products that has been added by add product endpoint",
         "requestBody": {
-          "description": "Stats object",
-          "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CalculatorPageRequest"
+                "type": "object",
+                "example": {
+                  "date": "02.07.2024"
+                }
               }
             }
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "responses": {
-          "201": {
-            "description": "Success",
+          "200": {
+            "description": "Successful response",
             "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CalculatorPageResponse"
-                }
-              }
+              "application/json": {}
             }
-          },
-          "400": {
-            "description": "Bad request (invalid request body)",
-            "content": {}
-          },
-          "404": {
-            "description": "Not found",
-            "content": {}
-          },
-          "500": {
-            "description": "Server error",
-            "content": {}
           }
         }
       }
     },
-    "/api/products/calculatorPagePrivate": {
+    "/api/products": {
       "post": {
-        "tags": ["Products"],
-        "summary": "Get user's private products",
-        "parameters": [],
-        "security": [
-          {
-            "Bearer": []
-          }
+        "tags": [
+          "default"
         ],
+        "summary": "Public Calculate",
+        "description": "Use for calculating the daily calorie intake and a list of non-recommended food",
         "requestBody": {
-          "description": "Stats object",
-          "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CalculatorPageRequest"
+                "type": "object",
+                "example": {
+                  "age": "18",
+                  "bloodType": "3",
+                  "currentWeight": "44",
+                  "desiredWeight": "55",
+                  "height": "156"
+                }
               }
             }
           }
         },
+        "security": [
+          {
+            "noauthAuth": []
+          }
+        ],
         "responses": {
-          "201": {
-            "description": "Success",
+          "200": {
+            "description": "Successful response",
             "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CalculatorPageRegisterResponse"
-                }
-              }
+              "application/json": {}
             }
-          },
-          "400": {
-            "description": "Bad request (invalid request body)",
-            "content": {}
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {}
-          },
-          "404": {
-            "description": "Not found",
-            "content": {}
-          },
-          "500": {
-            "description": "Server error",
-            "content": {}
           }
         }
       }
     },
-    "/api/products/search": {
-      "get": {
-        "tags": ["Products"],
-        "summary": "Product search in the directory",
+    "/api/products/{userId}": {
+      "post": {
+        "tags": [
+          "default"
+        ],
+        "summary": "Private Calculate (User ID)",
+        "description": "Use for calculating the daily calorie intake and a list of non-recommended food for registered user. User ID can be found in the ListMyProducts endpoint and map the owner to fetch the ID",
+        "requestBody": {
+          "content": {}
+        },
         "security": [
           {
-            "Bearer": []
+            "bearerAuth": []
           }
         ],
         "parameters": [
           {
+            "name": "userId",
             "in": "path",
-            "name": "title",
-            "required": true,
-            "description": "Product's title"
+            "schema": {
+              "type": "string"
+            },
+            "required": true
           }
         ],
         "responses": {
-          "201": {
-            "description": "Success",
+          "200": {
+            "description": "Successful response",
             "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AddProductResponse"
-                }
-              }
+              "application/json": {}
             }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {}
-          },
-          "404": {
-            "description": "Not found",
-            "content": {}
-          },
-          "500": {
-            "description": "Server error",
-            "content": {}
           }
         }
       }
     },
-    "/api/tracker/": {
+    "/api/myProducts/addProduct": {
       "post": {
-        "tags": ["Tracker"],
-        "summary": "Add product",
-        "parameters": [],
-        "security": [
-          {
-            "Bearer": []
-          }
+        "tags": [
+          "default"
         ],
+        "summary": "AddProduct",
+        "description": "Add product and it will added to the list of the current user's product",
         "requestBody": {
-          "description": "Product's object",
-          "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/AddProductRequest"
+                "type": "object",
+                "example": {
+                  "productName": "Amaranth",
+                  "productWeight": "20",
+                  "date": "{{timestamp}}"
+                }
               }
             }
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "responses": {
-          "201": {
-            "description": "Success",
+          "200": {
+            "description": "Successful response",
             "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AddProductResponse"
-                }
-              }
+              "application/json": {}
             }
-          },
-          "400": {
-            "description": "Bad request (invalid request body)",
-            "content": {}
-          },
-          "404": {
-            "description": "Not found",
-            "content": {}
-          },
-          "500": {
-            "description": "Server error",
-            "content": {}
           }
         }
       }
     },
-    "/api/tracker/{productId}": {
+    "/api/myProducts/{productId}": {
       "delete": {
-        "tags": ["Tracker"],
-        "summary": "Delete product",
+        "tags": [
+          "default"
+        ],
         "parameters": [
           {
-            "in": "path",
             "name": "productId",
-            "type": "string",
-            "description": "Product's id",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
             "required": true
           }
         ],
+        "summary": "DeleteProduct",
+        "description": "Delete the product of the current user",
         "security": [
           {
-            "Bearer": []
+            "bearerAuth": []
           }
         ],
         "responses": {
-          "201": {
-            "description": "Success",
-            "content": {}
-          },
-          "400": {
-            "description": "Bad request (invalid request body)",
-            "content": {}
-          },
-          "404": {
-            "description": "Not found",
-            "content": {}
-          },
-          "500": {
-            "description": "Server error",
-            "content": {}
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
+            }
           }
         }
       }
     },
-    "/api/tracker/{date}": {
-      "get": {
-        "tags": ["Tracker"],
-        "summary": "Get information of date",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "date",
-            "type": "string",
-            "description": "date YYYY-MM-DD",
-            "required": true
-          }
+    "/api/users/infouser": {
+      "put": {
+        "tags": [
+          "default"
         ],
-        "security": [
-          {
-            "Bearer": []
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": "Success",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/DateResponse"
+        "summary": "Infouser",
+        "description": "Use for updating the summary of the user's calories and the list of non-recommended food",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "age": "18",
+                  "bloodType": "3",
+                  "currentWeight": "44",
+                  "desiredWeight": "55",
+                  "height": "156",
+                  "dailyRate": 1274,
+                  "notAllowedProducts": [
+                    "Dried lentils",
+                    "Peanut butter PB2 dry skimmed",
+                    "Peanut butter",
+                    "Lentils (sprouts)",
+                    "red lentils"
+                  ],
+                  "notAllowedProductsAll": [
+                    "Peanut butter PB2 dry skimmed",
+                    "Peanut butter",
+                    "Lentils (sprouts)",
+                    "Dried lentils",
+                    "red lentils",
+                    "Canned Bonduelle Lentils",
+                    "Lentils boiled"
+                  ]
                 }
               }
             }
-          },
-          "400": {
-            "description": "Bad request (invalid request body)",
-            "content": {}
-          },
-          "404": {
-            "description": "Not found",
-            "content": {}
-          },
-          "500": {
-            "description": "Server error",
-            "content": {}
           }
-        }
-      }
-    }
-  },
-  "components": {
-    "schemas": {
-      "RegistrationRequest": {
-        "required": ["name", "email", "password"],
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "description": "User's name",
-            "example": "DevBenders"
-          },
-          "email": {
-            "type": "string",
-            "description": "User's email",
-            "example": "sample@samplemail.com",
-            "format": "email"
-          },
-          "password": {
-            "type": "string",
-            "description": "User's password",
-            "example": "isincorrect"
+        },
+        "security": [
+          {
+            "bearerAuth": []
           }
-        }
-      },
-      "RegistrationResponse": {
-        "type": "object",
-        "properties": {
-          "email": {
-            "type": "string",
-            "description": "User's email",
-            "example": "sample@samplemail.com",
-            "format": "email"
-          },
-          "name": {
-            "type": "string",
-            "description": "User's name",
-            "example": "DevBenders"
-          },
-          "id": {
-            "type": "number",
-            "description": "User's id",
-            "example": "656548897"
-          }
-        }
-      },
-      "AuthorizationRequest": {
-        "required": ["email", "password"],
-        "type": "object",
-        "properties": {
-          "email": {
-            "type": "string",
-            "description": "User's email",
-            "example": "sample@samplemail.com",
-            "format": "email"
-          },
-          "password": {
-            "type": "string",
-            "description": "User's password",
-            "example": "isincorrect"
-          }
-        }
-      },
-      "AuthorizationResponse": {
-        "type": "object",
-        "properties": {
-          "token": {
-            "type": "string",
-            "description": "User's token",
-            "example": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NSIsIm5hbWUiOiJKb2huIEdvbGQiLCJhZG1pbiI6dHJ1ZX0K.LIHjWCBORSWMEibq-tnT8ue_deUqZx1K0XxCOXZRrB"
-          },
-          "email": {
-            "type": "string",
-            "description": "User's email",
-            "example": "sample@samplemail.com",
-            "format": "email"
-          }
-        }
-      },
-      "LogoutRequest": {
-        "type": "object",
-        "required": ["id"],
-        "properties": {
-          "id": {
-            "type": "string",
-            "description": "User's id",
-            "example": "sample098"
-          }
-        }
-      },
-      "UsersCurrentRequest": {
-        "type": "object",
-        "required": ["email", "name"],
-        "properties": {
-          "email": {
-            "type": "string",
-            "description": "User's email",
-            "example": "sample@samplemail.com",
-            "format": "email"
-          },
-          "name": {
-            "type": "string",
-            "description": "User's name",
-            "example": "DevBenders"
-          }
-        }
-      },
-      "UsersCurrentResponse": {
-        "type": "object",
-        "properties": {
-          "email": {
-            "type": "string",
-            "description": "User's email",
-            "example": "sample@samplemail.com",
-            "format": "email"
-          },
-          "name": {
-            "type": "string",
-            "description": "User's name",
-            "example": "DevBenders"
-          }
-        }
-      },
-      "CalculatorPageRequest": {
-        "type": "object",
-        "required": [
-          "currentWeight",
-          "height",
-          "age",
-          "desiredWeight",
-          "bloodType"
         ],
-        "properties": {
-          "currentWeight": {
-            "type": "number",
-            "description": "User's current weight",
-            "example": "70"
-          },
-          "height": {
-            "type": "number",
-            "description": "User's height",
-            "example": "175"
-          },
-          "age": {
-            "type": "number",
-            "description": "User's age",
-            "example": "23"
-          },
-          "desiredWeight": {
-            "type": "number",
-            "description": "User's desired weight",
-            "example": "65"
-          },
-          "bloodType": {
-            "type": "number",
-            "description": "User's blood type",
-            "example": "2"
-          }
-        }
-      },
-      "CalculatorPageResponse": {
-        "type": "object",
-        "properties": {
-          "calories": {
-            "type": "number",
-            "description": "Calories",
-            "example": "1300"
-          },
-          "notAllowedProducts": {
-            "type": "array",
-            "description": "Some not allowed products",
-            "example": ["names of the products"]
-          }
-        }
-      },
-      "CalculatorPageRegisterResponse": {
-        "type": "object",
-        "properties": {
-          "calories": {
-            "type": "number",
-            "description": "Calories",
-            "example": "1300"
-          },
-          "notAllowedProducts": {
-            "type": "array",
-            "description": "Some not allowed products",
-            "example": ["names of the products"]
-          },
-          "parameters": {
-            "type": "object",
-            "properties": {
-              "kcal": {
-                "type": "number",
-                "description": "Product's kcal",
-                "example": 130
-              },
-              "weight": {
-                "type": "number",
-                "description": "Product's weight",
-                "example": 100
-              },
-              "title": {
-                "type": "string",
-                "description": "Product's title",
-                "example": "Рис"
-              },
-              "id": {
-                "type": "string",
-                "description": "Product's id",
-                "example": "5d515648faeffe6447"
-              }
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
             }
           }
         }
-      },
-      "AddProductRequest": {
-        "type": "object",
-        "required": ["kcal", "weight", "title"],
-        "properties": {
-          "kcal": {
-            "type": "number",
-            "description": "Product's kcal"
-          },
-          "weight": {
-            "type": "number",
-            "description": "Product's weight"
-          },
-          "title": {
-            "type": "string",
-            "description": "Product's name"
-          }
-        },
-        "example": {
-          "kcal": 280,
-          "weight": 200,
-          "title": "Amaranth"
-        }
-      },
-      "AddProductResponse": {
-        "type": "object",
-        "properties": {
-          "date": {
-            "type": "string",
-            "description": "Day's date"
-          },
-          "id": {
-            "type": "string",
-            "description": "Product's id"
-          },
-          "kcal": {
-            "type": "number",
-            "description": "Kcal consumed"
-          },
-          "weight": {
-            "type": "number",
-            "description": "Product's weight"
-          },
-          "title": {
-            "type": "string",
-            "description": "Product's name"
-          },
-          "owner": {
-            "type": "string",
-            "description": "Owner's id product"
-          }
-        },
-        "example": {
-          "date": "2022-07-10",
-          "_id": "8949gfsgr84rhh22ff66",
-          "kcal": 280,
-          "weight": 200,
-          "title": "Amaranth",
-          "owner": "52c0a8456a552da33ca9d955"
-        }
-      },
-      "DateResponse": {
-        "type": "object",
-        "properties": {
-          "date": {
-            "type": "string",
-            "description": "Day's date",
-            "example": "2021-07-15"
-          },
-          "email": {
-            "type": "string",
-            "description": "User's email",
-            "example": "sample@samplemail.com",
-            "format": "email"
-          },
-          "parameters": {
-            "type": "object",
-            "properties": {
-              "kcal": {
-                "type": "number",
-                "description": "Product's kcal"
-              },
-              "weight": {
-                "type": "number",
-                "description": "Product's weight"
-              },
-              "title": {
-                "type": "string",
-                "description": "Product's title"
-              },
-              "id": {
-                "type": "string",
-                "description": "Product's id"
-              }
-            }
-          }
-        }
-      }
-    },
-    "securitySchemes": {
-      "Bearer": {
-        "type": "http",
-        "scheme": "bearer",
-        "bearerFormat": "JWT"
       }
     }
   }
