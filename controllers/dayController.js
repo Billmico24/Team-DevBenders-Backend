@@ -1,65 +1,11 @@
-// import { SpecificDay } from "../models/specificDayModel.js";
+const shortid = require('shortid');
 
+const { User } = require("../models/user");
+const { Product } = require("../models/product");
+const { Summary } = require("../models/summary");
+const { Day } = require("../models/day");
 
-
-// const getDayInfo = async (req, res) => {
-//   try {
-//     const { date } = req.params;
-//     // Find day info by date
-//     const dayInfo = await SpecificDay.findOne({
-//       date: new Date(date),
-//     }).populate("owner", "-password");
-
-//     if (!dayInfo) {
-//       return res.status(404).json({ message: "No information found for this date" });
-//     }
-
-//     res.json(dayInfo);
-//   } catch (error) {
-//     res.status(500).json({ message: "Server error", error });
-//   }
-// };
-
-// const addDayInfo = async (req, res) => {
-//   try {
-//     // Create new day info
-//     console.log(req.body,'req.body as addDayInfo');
-//     const newDayInfo = new SpecificDay(req.body);
-//     await newDayInfo.save();
-//     res.status(201).json(newDayInfo);
-//   } catch (error) {
-//     console.log(error, 'Error in addDayInfo'); // Log the error
-//     console.log(req.body,'req.body as addDayInfo');
-//     res.status(500).json({ message: "Server error", error });
-//   }
-// };
-
-// const deleteDayInfo = async (req, res) => {
-//   try {
-//     const { id } = req.params;
-//     // Delete day info by ID
-//     const deletedDayInfo = await SpecificDay.findByIdAndDelete(id);
-
-//     if (!deletedDayInfo) {
-//       return res.status(404).json({ message: "No information found for this ID" });
-//     }
-
-//     res.json({ message: "Information deleted successfully" });
-//   } catch (error) {
-//     res.status(500).json({ message: "Server error", error });
-//   }
-// };
-
-// export { getDayInfo, addDayInfo, deleteDayInfo };
-
-import shortid from 'shortid';
-
-import { combineJsonFile } from "../helpers/combineJsonFile.js"
-
-import { User } from "../models/usersModel.js";
-import { Product } from "../models/productModel.js";
-import { Summary } from "../models/summaryModel.js";
-import { SpecificDay } from "../models/specificDayModel.js";
+const {combineJsonFile} = require("../helpers");
 
 const findProducts = async (req, res) => {
     const { search } = req.query;
@@ -89,7 +35,7 @@ const addProduct = async (req, res, next) => {
     }
     const user = await User.findById(_id);
 
-    const allDaysInfo = await Promise.all(user.days.map(dayId => SpecificDay.findById(dayId).exec()));
+    const allDaysInfo = await Promise.all(user.days.map(dayId => Day.findById(dayId).exec()));
 
     const existingDay = allDaysInfo.find((day) => day.date === date);
 
@@ -296,7 +242,7 @@ const getDayInfo = async (req, res, next) => {
 
     const dayInfo = allDaysInfo.find((day) => day.date === date);
     if(dayInfo) {
-        const day = await SpecificDay.findById(dayInfo._id);
+        const day = await Day.findById(dayInfo._id);
         const summary = await Summary.findById(day.daySummary)
             return res.status(200).send({
                 id: day._id,

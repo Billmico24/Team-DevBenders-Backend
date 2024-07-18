@@ -8,9 +8,14 @@ const summarySchema = new Schema({
   kcalConsumed: Number,
   percentsOfDailyRate: Number,
   dailyRate: Number,
-  userId: mongoose.Types.ObjectId,
+  userId: {
+    type: Schema.Types.ObjectId,
+    ref: "user",
+  },
 });
 
 const Summary = mongoose.model("Summary", summarySchema);
 
-export default Summary;
+export { Summary };
+
+

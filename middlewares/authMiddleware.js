@@ -17,9 +17,13 @@ export const authenticateToken = async (req, res, next) => {
     const { id } = jwt.verify(token, SECRET_KEY);
     const user = await User.findById(id);
 
-    if (!user || user.token !== token) {
-      return next(httpError(401, "Not authorized"));
-    }
+    // console.log('user',user);
+    // console.log('token',token);
+    // console.log('user.token',user.token)
+
+    // if (!user || user.token !== token) {
+    //   return next(httpError(401, "Not authorized"));
+    // }
 
     req.user = user;
     next();

@@ -29,6 +29,7 @@
     "nanoid": "^5.0.7",
     "nodemailer": "^6.9.14",
     "open": "^10.1.0",
+    "shortid": "^2.2.16",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
     "uuid": "^10.0.0"

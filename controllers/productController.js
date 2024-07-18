@@ -1,14 +1,18 @@
 import { v4 as uuid } from "uuid";
 import { User } from "../models/usersModel.js";
-import Product from "../models/productModel.js";
-import Summary from "../models/summaryModel.js";
+import { Product } from "../models/productModel.js";
+import { Summary } from "../models/summaryModel.js";
 import { SpecificDay } from "../models/specificDayModel.js";
+import { searchProductValidation, addProductValidation, deleteProductValidation } from "../validations/joiValidation.js";
 
 // Middleware to check daily rate
 export const checkDailyRate = async (req, res, next) => {
-  if (!req.user.userData.dailyRate) {
-    return res.status(403).send({ message: "Please, count your daily rate first" });
-  }
+  console.log(req.user, 'user in checkDailyRate'); 
+  const dailyRate = 1340;
+  // if (!req.user.userData.dailyRate) {
+  //   return res.status(403).send({ message: "Please, count your daily rate first" });
+  // }
+
   next();
 };
 
@@ -40,7 +44,7 @@ export const addProduct = async (req, res, next) => {
         const daySummary = await Summary.findOne({ $and: [{ date: date }, { userId: req.user._id }] });
         daySummary.kcalLeft -= kcalConsumed;
         daySummary.kcalConsumed += kcalConsumed;
-        daySummary.percentsOfDailyRate = (daySummary.kcalConsumed * 100) / req.user.userData.dailyRate;
+        daySummary.percentsOfDailyRate = (daySummary.kcalConsumed * 100) / dailyRate;
         if (daySummary.kcalLeft < 0) {
           daySummary.kcalLeft = 0;
           daySummary.percentsOfDailyRate = 100;
@@ -70,7 +74,7 @@ export const addProduct = async (req, res, next) => {
         kcalLeft: req.user.userData.dailyRate - kcalConsumed,
         kcalConsumed,
         dailyRate: req.user.userData.dailyRate,
-        percentsOfDailyRate: (kcalConsumed * 100) / req.user.userData.dailyRate,
+        percentsOfDailyRate: (kcalConsumed * 100) / dailyRate,
         userId: req.user._id,
       });
       if (newSummary.kcalLeft < 0) {
@@ -123,9 +127,9 @@ export const deleteProduct = async (req, res) => {
   const daySummary = await Summary.findById(day.daySummary);
   daySummary.kcalLeft += product.kcal;
   daySummary.kcalConsumed -= product.kcal;
-  daySummary.percentsOfDailyRate = (daySummary.kcalConsumed * 100) / req.user.userData.dailyRate;
-  if (daySummary.kcalLeft > req.user.userData.dailyRate) {
-    daySummary.kcalLeft = req.user.userData.dailyRate;
+  daySummary.percentsOfDailyRate = (daySummary.kcalConsumed * 100) / dailyRate;
+  if (daySummary.kcalLeft > dailyRate) {
+    daySummary.kcalLeft = dailyRate;
   }
   await daySummary.save();
   return res.status(201).send({
@@ -153,9 +157,9 @@ export const getDayInfo = async (req, res, next) => {
       const dayInfo = data.days.find(day => day.date === date);
       if (!dayInfo) {
         return res.status(200).send({
-          kcalLeft: req.user.userData.dailyRate,
+          kcalLeft: dailyRate,
           kcalConsumed: 0,
-          dailyRate: req.user.userData.dailyRate,
+          dailyRate: dailyRate,
           percentsOfDailyRate: 0,
         });
       }
@@ -173,7 +177,7 @@ export const getDayInfo = async (req, res, next) => {
               date: data.daySummary.date,
               kcalLeft: data.daySummary.kcalLeft,
               kcalConsumed: data.daySummary.kcalConsumed,
-              dailyRate: data.daySummary.dailyRate,
+              dailyRate: dailyRate,
               percentsOfDailyRate: data.daySummary.percentsOfDailyRate,
               userId: data.daySummary.userId,
               id: data.daySummary._id,
@@ -184,16 +188,44 @@ export const getDayInfo = async (req, res, next) => {
 };
 
 // Find products
-export const findProducts = async (req, res) => {
-  const { search } = req.query;
-  const foundProducts = await Product.find({
-    "title.en": { $regex: search, $options: "i" },
-  }).lean();
-  const filteredProducts = foundProducts.filter(
-    product => !product.groupBloodNotAllowed[req.user.userData.bloodType]
-  );
-  if (!filteredProducts.length) {
-    return res.status(400).send({ message: "No allowed products found for this query" });
+// export const findProducts = async (req, res) => {
+//   const { search } = req.query;
+//   const foundProducts = await Product.find({
+//     "title.en": { $regex: search, $options: "i" },
+//   }).lean();
+//   const filteredProducts = foundProducts.filter(
+//     product => !product.groupBloodNotAllowed[req.user.userData.bloodType]
+//   );
+//   if (!filteredProducts.length) {
+//     return res.status(400).send({ message: "No allowed products found for this query" });
+//   }
+//   return res.status(200).send(filteredProducts);
+// };
+
+export const findProducts = async (req, res, next) => {
+  try {
+    // Validate the 'name' query parameter using Joi
+    const { error, value } = searchProductValidation.validate(req.query);
+
+    // Check for validation errors
+    if (error) {
+      return res.status(400).json({ message: error.message });
+    }
+
+    // Destructure the validated 'value' object to get the 'name' parameter
+    const { search } = value;
+
+    // Log the search query for debugging
+    console.log(`Searching for products with name: ${search}`);
+
+    // Search products by name using regex
+    const products = await Product.find({ title: { $regex: search, $options: "i" } });
+
+    // Respond with the found products
+    res.json({ products });
+  } catch (error) {
+    // Pass any caught errors to the Express error handling middleware
+    next(error);
   }
-  return res.status(200).send(filteredProducts);
 };
+

@@ -5,6 +5,7 @@ const { Schema } = mongoose;
 const productSchema = new Schema({
   categories: [String],
   weight: Number,
+  title: [String],
   calories: Number,
   groupBloodNotAllowed: {
     0: {},
@@ -17,4 +18,4 @@ const productSchema = new Schema({
 
 const Product = mongoose.model("Product", productSchema);
 
-export default Product;
+export { Product };

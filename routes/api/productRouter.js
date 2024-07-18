@@ -11,12 +11,12 @@ const searchQuerySchema = Joi.object({
 
 const router = Router();
 
-
+// Search Product
 router.get(
     "/",
     ctrlWrapper(authenticateToken),
     ctrlWrapper(checkDailyRate),
-    validation(searchQuerySchema, "query"),
+    // validation(searchQuerySchema, "search"),
     ctrlWrapper(findProducts)
 );
 
