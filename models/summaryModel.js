@@ -10,7 +10,7 @@ const summarySchema = new Schema({
   dailyRate: Number,
   userId: {
     type: Schema.Types.ObjectId,
-    ref: "user",
+    ref: "User",
   },
 });
 

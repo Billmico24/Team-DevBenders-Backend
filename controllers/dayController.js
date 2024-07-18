@@ -11,7 +11,7 @@ const findProducts = async (req, res) => {
     const { search } = req.query;
     const { _id } = req.user;
     const foundProducts = await Product.find({
-        "title.ua": { $regex: search, $options: "i" },
+        "title": { $regex: search, $options: "i" },
         $or: [{ userId: null }, { userId: _id }]
     }).lean();
 
@@ -42,7 +42,7 @@ const addProduct = async (req, res, next) => {
     const kcalCoefficient = product.calories / product.weight;
     const kcalConsumed = kcalCoefficient * weight;
     const eatenProduct = {
-        title: product.title.ua,
+        title: product.title,
         weight,
         kcal: kcalConsumed,
         groupBloodNotAllowed: product.groupBloodNotAllowed,
@@ -184,8 +184,8 @@ const deleteProduct = async (req, res) => {
 const addNewProduct = async (req, res, next) => {
     // const message = "Try to combine JSON"
     // combineJsonFile(message);
-    const productName = req.body.title.ua
-    const checkItem = await Product.find({ 'title.ua': { $regex: new RegExp('^' + productName, 'i') } });
+    const productName = req.body.title
+    const checkItem = await Product.find({ 'title': { $regex: new RegExp('^' + productName, 'i') } });
     if (checkItem.length > 0) {
         return res.status(200).send({ message: "Such a product is already in the database" });
     }

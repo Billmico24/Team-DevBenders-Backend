@@ -1,61 +1,5 @@
-// import { SpecificDay } from "../models/specificDayModel.js";
-
-
-
-// const getDayInfo = async (req, res) => {
-//   try {
-//     const { date } = req.params;
-//     // Find day info by date
-//     const dayInfo = await SpecificDay.findOne({
-//       date: new Date(date),
-//     }).populate("owner", "-password");
-
-//     if (!dayInfo) {
-//       return res.status(404).json({ message: "No information found for this date" });
-//     }
-
-//     res.json(dayInfo);
-//   } catch (error) {
-//     res.status(500).json({ message: "Server error", error });
-//   }
-// };
-
-// const addDayInfo = async (req, res) => {
-//   try {
-//     // Create new day info
-//     console.log(req.body,'req.body as addDayInfo');
-//     const newDayInfo = new SpecificDay(req.body);
-//     await newDayInfo.save();
-//     res.status(201).json(newDayInfo);
-//   } catch (error) {
-//     console.log(error, 'Error in addDayInfo'); // Log the error
-//     console.log(req.body,'req.body as addDayInfo');
-//     res.status(500).json({ message: "Server error", error });
-//   }
-// };
-
-// const deleteDayInfo = async (req, res) => {
-//   try {
-//     const { id } = req.params;
-//     // Delete day info by ID
-//     const deletedDayInfo = await SpecificDay.findByIdAndDelete(id);
-
-//     if (!deletedDayInfo) {
-//       return res.status(404).json({ message: "No information found for this ID" });
-//     }
-
-//     res.json({ message: "Information deleted successfully" });
-//   } catch (error) {
-//     res.status(500).json({ message: "Server error", error });
-//   }
-// };
-
-// export { getDayInfo, addDayInfo, deleteDayInfo };
-
 import shortid from 'shortid';
-
 import { combineJsonFile } from "../helpers/combineJsonFile.js"
-
 import { User } from "../models/usersModel.js";
 import { Product } from "../models/productModel.js";
 import { Summary } from "../models/summaryModel.js";
@@ -65,7 +9,7 @@ const findProducts = async (req, res) => {
     const { search } = req.query;
     const { _id } = req.user;
     const foundProducts = await Product.find({
-        "title.ua": { $regex: search, $options: "i" },
+        "title": { $regex: search, $options: "i" },
         $or: [{ userId: null }, { userId: _id }]
     }).lean();
 
@@ -88,15 +32,12 @@ const addProduct = async (req, res, next) => {
             .send({ message: "Product not found" });
     }
     const user = await User.findById(_id);
-
     const allDaysInfo = await Promise.all(user.days.map(dayId => SpecificDay.findById(dayId).exec()));
-
     const existingDay = allDaysInfo.find((day) => day.date === date);
-
     const kcalCoefficient = product.calories / product.weight;
     const kcalConsumed = kcalCoefficient * weight;
     const eatenProduct = {
-        title: product.title.ua,
+        title: product.title,
         weight,
         kcal: kcalConsumed,
         groupBloodNotAllowed: product.groupBloodNotAllowed,
@@ -116,6 +57,9 @@ const addProduct = async (req, res, next) => {
             daySummary.kcalLeft = 0;
             daySummary.percentsOfDailyRate = 100;
         }
+
+        console.log('daySummary',daySummary);
+
         await daySummary.save();
         return res.status(201).send({
             eatenProduct,
@@ -151,32 +95,32 @@ const addProduct = async (req, res, next) => {
             newSummary.percentsOfDailyRate = 100;
             await newSummary.save();
         }
-        const newDay = await Day.create({
+        const newDay = await SpecificDay.create({
             date,
             eatenProducts: [eatenProduct],
             daySummary: newSummary._id,
         });
         user.days.push(newDay._id);
         await user.save();
-
+        
         return res.status(201).send({
-            eatenProduct,
-            newDay: {
-                id: newDay._id,
-                eatenProducts: newDay.eatenProducts,
-                date: newDay.date,
-                daySummary: newDay.daySummary,
-            },
-            newSummary: {
-                date: newSummary.date,
-                kcalLeft: newSummary.kcalLeft,
-                kcalConsumed: newSummary.kcalConsumed,
-                dailyRate: newSummary.dailyRate,
-                percentsOfDailyRate: newSummary.percentsOfDailyRate,
-                userId: newSummary.userId,
-                id: newSummary._id,
-            },
-        });
+          eatenProduct,
+          day: {
+              id: existingDay._id,
+              eatenProducts: existingDay.eatenProducts,
+              date: existingDay.date,
+              daySummary: existingDay.daySummary,
+          },
+          daySummary: {
+              date: daySummary.date,
+              kcalLeft: daySummary.kcalLeft,
+              kcalConsumed: daySummary.kcalConsumed,
+              dailyRate: daySummary.dailyRate,
+              percentsOfDailyRate: daySummary.percentsOfDailyRate,
+              userId: daySummary.userId,
+              id: daySummary._id,
+          },
+      });
     }
 };
 
@@ -238,8 +182,8 @@ const deleteProduct = async (req, res) => {
 const addNewProduct = async (req, res, next) => {
     // const message = "Try to combine JSON"
     // combineJsonFile(message);
-    const productName = req.body.title.ua
-    const checkItem = await Product.find({ 'title.ua': { $regex: new RegExp('^' + productName, 'i') } });
+    const productName = req.body.title
+    const checkItem = await Product.find({ 'title': { $regex: new RegExp('^' + productName, 'i') } });
     if (checkItem.length > 0) {
         return res.status(200).send({ message: "Such a product is already in the database" });
     }
@@ -288,47 +232,62 @@ const getPeriodInfo = async (req, res, next) => {
 }
 
 const getDayInfo = async (req, res, next) => {
+  try {
     const { date } = req.body;
     const { _id } = req.user;
     const user = await User.findById(_id);
 
-    const allDaysInfo = await Promise.all(user.days.map(dayId => Day.findById(dayId).exec()));
+    if (!user) {
+      return res.status(404).send({ message: "User not found" });
+    }
 
-    const dayInfo = allDaysInfo.find((day) => day.date === date);
-    if(dayInfo) {
-        const day = await SpecificDay.findById(dayInfo._id);
-        const summary = await Summary.findById(day.daySummary)
-            return res.status(200).send({
-                id: day._id,
-                eatenProducts: day.eatenProducts,
-                date: day.date,
-                daySummary: {
-                    date: summary.date,
-                    kcalLeft: summary.kcalLeft,
-                    kcalConsumed: summary.kcalConsumed,
-                    dailyRate: summary.dailyRate,
-                    percentsOfDailyRate: summary.percentsOfDailyRate,
-                    userId: summary.userId,
-                    id: summary._id,
-                },
-            });
-    };
-    
-    if (!dayInfo) {
-        return res.status(200).send({
-            eatenProducts: [],
-            date: date,
-            daySummary: {
-                date: date,
-                kcalLeft: user.userData.dailyRate,
-                kcalConsumed: 0,
-                dailyRate: user.userData.dailyRate,
-                percentsOfDailyRate: 0,
-                userId: _id,
-            },
-        });
-    };
+    const allDaysInfo = await Promise.all(user.days.map(dayId => SpecificDay.findById(dayId).exec()));
+
+    const dayInfo = allDaysInfo.find(day => day && day.date === date);
+    if (dayInfo) {
+      const day = await SpecificDay.findById(dayInfo._id);
+      if (!day) {
+        return res.status(404).send({ message: "Day not found" });
+      }
+
+      const summary = await Summary.findById(day.daySummary);
+      if (!summary) {
+        return res.status(404).send({ message: "Summary not found" });
+      }
+
+      return res.status(200).send({
+        id: day._id,
+        eatenProducts: day.eatenProducts,
+        date: day.date,
+        daySummary: {
+          date: summary.date,
+          kcalLeft: summary.kcalLeft,
+          kcalConsumed: summary.kcalConsumed,
+          dailyRate: summary.dailyRate,
+          percentsOfDailyRate: summary.percentsOfDailyRate,
+          userId: summary.userId,
+          id: summary._id,
+        },
+      });
+    }
+
+    return res.status(200).send({
+      eatenProducts: [],
+      date: date,
+      daySummary: {
+        date: date,
+        kcalLeft: user.userData.dailyRate,
+        kcalConsumed: 0,
+        dailyRate: user.userData.dailyRate,
+        percentsOfDailyRate: 0,
+        userId: _id,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
 };
+
 
 const checkDailyRate = async (req, res, next) => {
     if (!req.user.userData.dailyRate) {

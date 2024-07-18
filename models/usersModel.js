@@ -59,12 +59,8 @@ const userSchema = new Schema(
           type: [String],
           default: null
         }, 
-        notAllowedProductsAll: {
-          type: [String],
-          default: null
-        }, 
       },
-    days: [{ type: Schema.Types.ObjectId, ref: "Day" }],
+    days: [{ type: Schema.Types.ObjectId, ref: "SpecificDay" }],
   },
   
   { versionKey: false }

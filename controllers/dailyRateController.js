@@ -4,9 +4,27 @@ import { Summary } from "../models/summaryModel.js";
 
 const countDailyRate = async (req, res) => {
   const { height, weight, age, desiredWeight, bloodType } = req.body;
-  const { _id } = req.params;
-  const userId = _id;
-  const dailyRate = 10 * weight + 6.25 * height - 5 * age - 161 - 10 * (weight - desiredWeight);
+
+  console.log('req.body',req.body);
+  // const { _id } = req.params;
+  // const userId = _id;
+
+  const { userId } = req.params;
+
+  // const dailyRate = 10 * weight + 6.25 * height - 5 * age - 161 - 10 * (weight - desiredWeight);
+  console.log('height', height);
+  console.log('weight', weight);
+  console.log('age', age);
+  console.log('desiredWeight', desiredWeight);
+  console.log('bloodType',bloodType);
+
+  const dailyRate =
+    10 * weight + 6.25 * height - 5 * age - 161 - 10 * (weight - desiredWeight);
+
+  // const dailyRate = 1040; 
+
+  console.log('dailyRate', dailyRate);
+
   let notAllowedProductsObj = [];
   switch (bloodType) {
     case 1:
@@ -33,13 +51,15 @@ const countDailyRate = async (req, res) => {
       break;
   }
   const notAllowedProducts = [
-      ...new Set(notAllowedProductsObj.map((product) => product.title.en)),
+      ...new Set(notAllowedProductsObj.map((product) => product.title)),
     ];
     if (userId) {
+      console.log('userId',userId);
       const user = await User.findById(userId);
       if (!user) {
         return res.status(404).send({ message: "Invalid user" });
       }
+      console.log('dailyRate',dailyRate);
       user.userData = {
         weight,
         height,

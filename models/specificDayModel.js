@@ -2,17 +2,12 @@ import { Schema, model } from "mongoose";
 
 const specificDaySchema = new Schema(
   {
-    date: {
-      type: Date,
-      required: true,
-    },
-    title: { type: String, required: true },
-    weight: { type: Number, required: true },
-    kcal: { type: Number, required: true },
-    owner: {
-      type: Schema.Types.ObjectId,
-      ref: "user",
-    },
+    date: { type: Date, required: false,},
+    title: { type: String, required: false },
+    weight: { type: Number, required: false },
+    kcal: { type: Number, required: false },
+    id: String,
+    _id: false,
   },
   { timestamps: true }
 );
