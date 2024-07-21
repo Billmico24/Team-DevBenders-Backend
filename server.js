@@ -1,32 +1,33 @@
-import mongoose from "mongoose";
-import dotenv from "dotenv";
-import { app } from "./app.js";
-import open from "open";
+require('dotenv').config();
+const mongoose = require('mongoose');
+const app = require('./app');
 
-dotenv.config();
+const { HOST_DB, PORT = 3000 } = process.env;
 
-const { DB_HOST, PORT = 3000 } = process.env;
+// Set Mongoose strictQuery option
+mongoose.set('strictQuery', true); // or false based on your requirement
 
-mongoose
-  .connect(DB_HOST)
-  .then(() => {
-    app.listen(PORT, () =>
-      console.log(`Server running. Use our API on port: ${PORT}`)
-    );
-    console.log(`Swagger UI is available at http://localhost:${PORT}/api-docs`);
+const main = async () => {
+  try {
+    if (!HOST_DB) {
+      throw new Error("HOST_DB not set!");
+    }
+    
+    console.log("HOST_DB:", HOST_DB); // Log the HOST_DB variable to verify it's loaded
 
-    // swagger auto open in new tab, commit below lines to disable
-    const swaggerUiUrl = `http://localhost:${PORT}/api-docs`;
-    open(swaggerUiUrl)
-      .then(() => {
-        console.log(`Swagger UI opened at ${swaggerUiUrl}`);
-      })
-      .catch((err) => {
-        console.error(`Failed to open Swagger UI: ${err}`);
-      });
-    // commit up to line above
-  })
-  .catch((err) => {
-    console.log(`Server not running. Error message: ${err.message}`);
+    await mongoose.connect(HOST_DB, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    console.log("Database connection successful");
+    app.listen(PORT, (err) => {
+      if (err) throw err;
+      console.log(`Server is listening on port: ${PORT}`);
+    });
+  } catch (error) {
+    console.error("Error:", error.message);
     process.exit(1);
-  });
+  }
+};
+
+main();
